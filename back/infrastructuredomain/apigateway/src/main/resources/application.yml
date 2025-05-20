@@ -1,0 +1,54 @@
+## YAML Template.
+---
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+
+server:
+  port:8080
+  
+spring:
+  application:
+    name: apigateway
+  cloud:
+    gateway:
+      cors-configurations:
+        '[/**]':
+          allowed-origins: "http://localhost:4200" # Solo uno, no múltiples orígenes
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+      routes:
+      - id: user_full
+        uri: lb://businessdomain-userservice
+        predicates:
+          - Path=/api/users/full/**
+        filter:
+          - AuthenticationFiltering
+      - id: user_service
+        uri: lb://businessdomain-userservice
+        predicates:
+        - Path=/api/users/**
+      - id: product_service
+        uri: lb://businessdomain-productservice
+        predicates:
+        - Path=/api/product/**
+      - id: account_service
+        uri: lb://businessdomain-accountservice
+        predicates:
+          - Path=/api/account/**
+      - id: movement_service
+        uri: lb://businessdomain-movementservice
+        predicates:
+          - Path=/api/movement/**
+      - id: exhibition_service
+        uri: lb://businessdomain-exhibition
+        predicates:
+          - Path=/api/exhibition/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
