@@ -27,6 +27,8 @@ import { CommonModule } from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
 import { DatePicker } from 'primeng/datepicker';
 import { Utils } from '../../core/utils';
+import { CustomDatePipe } from '../../core/pipes/custom-date-pipe';
+import { NumberFormatPipe } from '../../core/pipes/number-formt';
 const endpoint: any = environment.baseUrlSpring;
 @Component({
     selector: 'app-accountbyid',
@@ -52,7 +54,9 @@ const endpoint: any = environment.baseUrlSpring;
         InputIconModule,
         IconFieldModule,
         ConfirmDialogModule,
-        DatePicker
+        DatePicker,
+        CustomDatePipe,
+        NumberFormatPipe
     ],
     providers: [ConfirmationService],
     template: `
@@ -110,7 +114,7 @@ const endpoint: any = environment.baseUrlSpring;
                             </div>
                             <div>
                                 <span class="font-semibold">Cuota:</span>
-                                <span class="ml-2">{{ product.cuota | currency: product.currency }}</span>
+                                <span class="ml-2">{{ product.cuota | numberFormat }}</span>
                             </div>
                             <div>
                                 <span class="font-semibold">Programado:</span>
@@ -128,11 +132,11 @@ const endpoint: any = environment.baseUrlSpring;
                             </div>
                             <div>
                                 <span class="font-semibold">Primera aportación:</span>
-                                <span class="ml-2">{{ product.createdAt | date: 'dd/MM/yyyy' }}</span>
+                                <span class="ml-2">{{ product.createdAt | customDate }}</span>
                             </div>
                             <div>
                                 <span class="font-semibold">Saldo:</span>
-                                <span class="ml-2">{{ product.balance | currency: product.currency }}</span>
+                                <span class="ml-2">{{ product.balance | numberFormat }}</span>
                             </div>
                             <div>
                                 <span class="font-semibold">Moneda:</span>
@@ -146,11 +150,11 @@ const endpoint: any = environment.baseUrlSpring;
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <span class="font-semibold">Creado el:</span>
-                                <span class="ml-2">{{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                                <span class="ml-2">{{ product.createdAt | customDate }}</span>
                             </div>
                             <div>
                                 <span class="font-semibold">Actualizado el:</span>
-                                <span class="ml-2">{{ product.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                                <span class="ml-2">{{ product.updatedAt | customDate }}</span>
                             </div>
                         </div>
                     </div>
@@ -224,7 +228,7 @@ export class Accountbyid implements OnInit {
         this.cols = [
             { field: 'name', header: 'Asunto', customExportHeader: 'Product Code' },
             { field: 'type', header: 'Tipo' },
-            { field: 'cuota', header: 'Cuota' }
+            { field: 'cuota', header: 'Cuota', pipe:'currency' }
         ];
         this.loadAccount();
     }
@@ -277,6 +281,7 @@ export class Accountbyid implements OnInit {
             // Esto se ejecuta SOLO después de que reloadUser() haya terminado
             this.userLogin = this.userService.user;
             this.movements = this.userLogin.movements
+            this.loadAccount();
             this.visible = false;
             this.spinner = false;
         });

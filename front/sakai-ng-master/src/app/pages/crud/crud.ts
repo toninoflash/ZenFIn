@@ -19,6 +19,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
+import { CustomDatePipe } from '../../core/pipes/custom-date-pipe';
+import { NumberFormatPipe } from '../../core/pipes/number-formt';
 
 interface Column {
     field: string;
@@ -53,7 +55,9 @@ interface ExportColumn {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+                CustomDatePipe,
+                NumberFormatPipe
     ],
     template: `
         <p-toolbar styleClass="mb-6">
@@ -113,7 +117,7 @@ interface ExportColumn {
                         <!-- Aplica pipes dinámicos si existen -->
                         <span *ngIf="!col.pipe">{{ product[col.field] }}</span>
                         <span *ngIf="col.pipe === 'currency'">
-                            {{ product[col.field] | currency }}
+                            {{ product[col.field] | numberFormat }}
                         </span>
                         <!-- Agrega más pipes según sea necesario (ej: date, uppercase, etc.) -->
                     </td>

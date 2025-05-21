@@ -4,6 +4,8 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { Product, ProductService } from '../../service/product.service';
+import { CustomDatePipe } from '../../../core/pipes/custom-date-pipe';
+import { NumberFormatPipe } from '../../../core/pipes/number-formt';
 interface Column {
     field: string;
     header: string;
@@ -13,7 +15,9 @@ interface Column {
 @Component({
     standalone: true,
     selector: 'app-recent-sales-widget',
-    imports: [CommonModule, TableModule, ButtonModule, RippleModule],
+    imports: [CommonModule, TableModule, ButtonModule, RippleModule,
+            CustomDatePipe,
+            NumberFormatPipe],
     template: `<div class="card !mb-8">
         <div class="font-semibold text-xl mb-4">Movimientos</div>
         <p-table [value]="products" [paginator]="true" [rows]="5" responsiveLayout="scroll">
@@ -31,10 +35,10 @@ interface Column {
                 <!-- Aplica pipes dinámicos si existen -->
                 <span *ngIf="!col.pipe">{{ product[col.field] }}</span>
                 <span *ngIf="col.pipe === 'currency'">
-                    {{ product[col.field] | currency }}
+                    {{ product[col.field] | numberFormat }}
                 </span>
                 <span *ngIf="col.pipe === 'date'">
-                    {{ product[col.field] | date }}
+                    {{ product[col.field] | customDate }}
                 </span>
                 <span *ngIf="col.pipe === 'primary'"
                     [class]="product[col.field] === 'Ingreso' ? 'text-primary font-bold' : product[col.field] === 'Gasto' ? 'text-red-600 font-bold' : 'text-blue-600 font-bold'">
