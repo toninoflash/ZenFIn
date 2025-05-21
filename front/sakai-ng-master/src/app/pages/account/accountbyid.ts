@@ -26,6 +26,7 @@ import { RippleModule } from 'primeng/ripple';
 import { CommonModule } from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
 import { DatePicker } from 'primeng/datepicker';
+import { Utils } from '../../core/utils';
 const endpoint: any = environment.baseUrlSpring;
 @Component({
     selector: 'app-accountbyid',
@@ -55,9 +56,9 @@ const endpoint: any = environment.baseUrlSpring;
     ],
     providers: [ConfirmationService],
     template: `
-        <app-top [data]="account" />
+        <app-top [data]="account" [movements]="movements" />
         <div class="my-6">
-            <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" />
+            <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" (userEmitter)="reloadUser()"/>
         </div>
         <p-dialog [(visible)]="visible" header="Product Details" [modal]="true">
             <ng-template #content>
@@ -165,6 +166,7 @@ export class Accountbyid implements OnInit {
     userLogin: any;
     account: any;
     product: any;
+    movements: any[]= [];
     spinner: boolean = false;
     visible = false;
     visibleView = false;
@@ -190,6 +192,7 @@ export class Accountbyid implements OnInit {
                 const storedUser = sessionStorage.getItem('us');
                 this.userLogin = storedUser ? JSON.parse(storedUser) : null;
             }
+
         // Obtener el ID de la URL
         this.id = this.route.snapshot.paramMap.get('id'); // El '+' convierte el string a número
 
@@ -198,6 +201,7 @@ export class Accountbyid implements OnInit {
             this.id = params.get('id');
         });
         this.products = this.userLogin.product.filter((product: any) => product.aid === Number(this.id));
+        this.movements = this.userLogin.movements.filter((mov:any) => mov.aid === Number(this.id))
         this.formGroup = new FormGroup({
             type: new FormControl<any | null>(null, Validators.required),
             name: new FormControl<any | null>(null, Validators.required),
@@ -211,11 +215,11 @@ export class Accountbyid implements OnInit {
             { name: 'Ahorro', code: 'RM' }
         ];
         this.optionsPro = [
-            { name: 'No', code: 'NY' },
-            { name: 'Si, Mensual', code: 'RM' },
-            { name: 'Si, Trimestral', code: 'RM' },
-            { name: 'Si, Semestral', code: 'RM' },
-            { name: 'Si, Anual', code: 'RM' }
+            { name: 'Eventual', code: 'NY' },
+            { name: 'Mensual', code: 'RM' },
+            { name: 'Trimestral', code: 'RM' },
+            { name: 'Semestral', code: 'RM' },
+            { name: 'Anual', code: 'RM' }
         ];
         this.cols = [
             { field: 'name', header: 'Asunto', customExportHeader: 'Product Code' },
@@ -268,9 +272,14 @@ export class Accountbyid implements OnInit {
         this.baseService.postItem(url, data).subscribe((resp: any) => {
             this.products.push(resp);
             this.userLogin.product = this.products;
-            this.userService.user = this.userLogin;
+            // Ahora reloadUser() retorna un Observable, así que podemos suscribirnos
+        Utils.reloadUser(this.baseService, this.userService).subscribe(() => {
+            // Esto se ejecuta SOLO después de que reloadUser() haya terminado
+            this.userLogin = this.userService.user;
+            this.movements = this.userLogin.movements
             this.visible = false;
             this.spinner = false;
+        });
         });
     }
     update() {
@@ -287,10 +296,14 @@ export class Accountbyid implements OnInit {
             this.baseService.getItems(endpoint + 'users/full/' + data.uid).subscribe((resp: any) => {
                 this.products = resp.product;
                 this.userLogin.product = this.products;
-                this.userService.user = this.userLogin;
+                 Utils.reloadUser(this.baseService, this.userService)
                 this.visible = false;
                 this.spinner = false;
             });
         });
+    }
+
+    reloadUser() {
+        Utils.reloadUser(this.baseService,this.userService)
     }
 }

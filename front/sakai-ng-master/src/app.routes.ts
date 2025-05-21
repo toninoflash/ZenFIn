@@ -11,6 +11,7 @@ import { ProductPage } from './app/pages/product/product';
 import { Crud } from './app/pages/crud/crud';
 import { Credit } from './app/pages/credit/credit';
 import { Piggy } from './app/pages/piggy/piggy';
+import { Profile } from './app/pages/profile/profile';
 
 export const appRoutes: Routes = [
     {
@@ -18,12 +19,13 @@ export const appRoutes: Routes = [
         component: AppLayout,
         canActivate: [AuthGuard],
         children: [
-            { path: 'dashboard', component: Dashboard },
+            { path: 'dashboard', component: Dashboard ,canActivate: [AuthGuard],},
             { path: 'account', loadChildren: () => import('./app/pages/account/account.routes') },
-            { path: 'product', component: ProductPage },
-            { path: 'administration', component: Crud },
-            { path: 'credit', component: Credit },
-            { path: 'piggy', component: Piggy },
+            { path: 'product', component: ProductPage ,canActivate: [AuthGuard],},
+            { path: 'administration', component: Crud,canActivate: [AuthGuard] },
+            { path: 'credit', component: Credit,canActivate: [AuthGuard] },
+            { path: 'piggy', component: Piggy,canActivate: [AuthGuard] },
+            { path: 'profile', component: Profile,canActivate: [AuthGuard] },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

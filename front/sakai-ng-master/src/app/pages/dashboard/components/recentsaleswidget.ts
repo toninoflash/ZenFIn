@@ -1,10 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { Product, ProductService } from '../../service/product.service';
-
+interface Column {
+    field: string;
+    header: string;
+    customExportHeader?: string;
+    pipe?: string;
+}
 @Component({
     standalone: true,
     selector: 'app-recent-sales-widget',
@@ -12,36 +17,49 @@ import { Product, ProductService } from '../../service/product.service';
     template: `<div class="card !mb-8">
         <div class="font-semibold text-xl mb-4">Movimientos</div>
         <p-table [value]="products" [paginator]="true" [rows]="5" responsiveLayout="scroll">
-            <ng-template #header>
-                <tr>
-                    <th>Image</th>
-                    <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-                    <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                    <th>View</th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-product>
-                <tr>
-                    <td style="width: 15%; min-width: 5rem;">
-                        <img src="https://primefaces.org/cdn/primevue/images/product/{{ product.image }}" class="shadow-lg" alt="{{ product.name }}" width="50" />
-                    </td>
-                    <td style="width: 35%; min-width: 7rem;">{{ product.name }}</td>
-                    <td style="width: 35%; min-width: 8rem;">{{ product.price | currency: 'USD' }}</td>
-                    <td style="width: 15%;">
-                        <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+    <ng-template pTemplate="header">
+        <tr>
+            <th *ngFor="let col of cols" [pSortableColumn]="col.field" style="min-width:12rem">
+                {{ col.header }}
+                <p-sortIcon [field]="col.field" />
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+        <tr (click)="viewProduct(product)">
+            <td *ngFor="let col of cols">
+                <!-- Aplica pipes dinámicos si existen -->
+                <span *ngIf="!col.pipe">{{ product[col.field] }}</span>
+                <span *ngIf="col.pipe === 'currency'">
+                    {{ product[col.field] | currency }}
+                </span>
+                <span *ngIf="col.pipe === 'date'">
+                    {{ product[col.field] | date }}
+                </span>
+                <span *ngIf="col.pipe === 'primary'"
+                    [class]="product[col.field] === 'Ingreso' ? 'text-primary font-bold' : product[col.field] === 'Gasto' ? 'text-red-600 font-bold' : 'text-blue-600 font-bold'">
+                    {{ product[col.field] }}
+                </span>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
     </div>`,
     providers: [ProductService]
 })
 export class RecentSalesWidget {
-    products!: Product[];
+    @Input() products!: any[];
+    @Input() cols!: Column[];
+    @Output() viewEmitter: EventEmitter<any> = new EventEmitter<any>();
 
+    product:any
     constructor(private productService: ProductService) {}
 
     ngOnInit() {
-        this.productService.getProductsSmall().then((data) => (this.products = data));
+        console.table(this.products)
+    }
+    viewProduct(product: Product) {
+        this.product = { ...product };
+        this.viewEmitter.emit(this.product);
     }
 }

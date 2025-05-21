@@ -1,12 +1,16 @@
+import { UserService } from './services/users/users.service';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { BaseServiceService } from './services/base-service.service';
 import { MessageService } from 'primeng/api';
 import { User } from './models/user';
+import { environment } from '../../enviroments/environment';
+import { Observable, tap } from 'rxjs';
+const endpoint = environment.baseUrlSpring;
 
 export class Utils {
   TODAY: Date = new Date();
 
-  constructor() {}
+  constructor(private userService:UserService) {}
 
   static showMessage(
     messageService: MessageService,
@@ -138,4 +142,20 @@ export class Utils {
     }
     return baseMenuItems;
   }
+
+  static reloadUser(baseService: BaseServiceService, userService: UserService): Observable<any> {
+    console.log("Dentro");
+    let userLogin = JSON.parse(sessionStorage.getItem("us")!);
+    const url = endpoint + 'users/full/' + userLogin.id;
+
+    return baseService.getItems(url).pipe(
+        tap((resp: any) => {
+            userLogin = resp;
+            userService.user = userLogin;
+            sessionStorage.setItem('us', JSON.stringify(userLogin));
+        })
+    );
+}
+
+
 }

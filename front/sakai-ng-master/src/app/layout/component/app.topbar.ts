@@ -78,7 +78,7 @@ import { User } from '../../core/models/user';
                         <i class="pi pi-inbox"></i>
                         <span>Messages</span>
                     </button>
-                    <button type="button" class="layout-topbar-action" >
+                    <button type="button" class="layout-topbar-action" routerLink="/profile">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
                     </button>
@@ -106,6 +106,7 @@ export class AppTopbar {
 
     }
     logout() {
-        this.userService.logout()
+        this.userService.logout();
+        this.userService.user = null;
     }
 }

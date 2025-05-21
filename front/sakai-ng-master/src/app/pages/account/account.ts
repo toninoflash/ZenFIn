@@ -11,6 +11,7 @@ import { Select } from 'primeng/select';
 import { environment } from '../../../enviroments/environment';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { Utils } from '../../core/utils';
 const endpoint: any = environment.baseUrlSpring;
 @Component({
     selector: 'app-account',
@@ -91,7 +92,8 @@ export class Account implements OnInit {
         this.baseService.postItem(url, data).subscribe((resp: any) => {
             this.accounts.push(resp);
             this.userLogin.account = this.accounts;
-            this.userService.user = this.userLogin;
+                        Utils.reloadUser(this.baseService, this.userService)
+
             this.visible = false;
             this.spinner = false;
         });

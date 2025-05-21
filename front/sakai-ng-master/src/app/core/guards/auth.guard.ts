@@ -1,3 +1,5 @@
+import { BaseServiceService } from './../services/base-service.service';
+import { Utils } from './../utils';
 import { HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
@@ -10,7 +12,7 @@ import { UserService } from '../services/users/users.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private userService: UserService, private router: Router ){}
+  constructor(private userService: UserService, private router: Router, private baseService:BaseServiceService ){}
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot){
@@ -21,6 +23,8 @@ export class AuthGuard implements CanActivate {
           sessionStorage.clear()
           this.userService.user = null
           this.router.navigateByUrl('/login')
+        } else {
+            // Utils.reloadUser(this.baseService, this.userService)
         }
       })
     );
