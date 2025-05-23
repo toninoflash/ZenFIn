@@ -50,24 +50,22 @@ export class Account implements OnInit {
     private destroy$ = new Subject<void>();
 
     ngOnInit(): void {
-        this.userService.userChange.pipe(takeUntil(this.destroy$)).subscribe((user) => {
-            if (user) {
-                this.userLogin = user;
-            } else {
-                const storedUser = sessionStorage.getItem('us');
-                this.userLogin = storedUser ? JSON.parse(storedUser) : null;
-            }
-            this.accounts = this.userLogin?.account || [];
+       if (sessionStorage.getItem('us')) {
+            const storedUser = sessionStorage.getItem('us');
+            this.userLogin = storedUser ? JSON.parse(storedUser) : null;
+        } else {
+            this.userLogin = this.userService.user;
+        }
+        this.accounts = this.userLogin?.account || [];
 
-            this.stateOptions = [
-                { name: 'Cuenta corriente', code: 'NY' },
-                { name: 'Cuenta crédito', code: 'RM' }
-            ];
+        this.stateOptions = [
+            { name: 'Cuenta corriente', code: 'NY' },
+            { name: 'Cuenta crédito', code: 'RM' }
+        ];
 
-            this.formGroup = new FormGroup({
-                type: new FormControl<any | null>(null),
-                iban: new FormControl<any | null>(null)
-            });
+        this.formGroup = new FormGroup({
+            type: new FormControl<any | null>(null),
+            iban: new FormControl<any | null>(null)
         });
     }
 
@@ -92,10 +90,14 @@ export class Account implements OnInit {
         this.baseService.postItem(url, data).subscribe((resp: any) => {
             this.accounts.push(resp);
             this.userLogin.account = this.accounts;
-                        Utils.reloadUser(this.baseService, this.userService)
-
-            this.visible = false;
-            this.spinner = false;
+            Utils.reloadUser(this.baseService, this.userService).subscribe((resp: any) => {
+                // Esto se ejecuta SOLO después de que reloadUser() haya terminado
+                console.log('Respuesta de reloadUser:', resp);
+                this.userService.user = resp;
+                this.userLogin = this.userService.user;
+                this.visible = false;
+                this.spinner = false;
+            });
         });
     }
 }

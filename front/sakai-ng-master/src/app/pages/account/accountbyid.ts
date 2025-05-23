@@ -62,7 +62,7 @@ const endpoint: any = environment.baseUrlSpring;
     template: `
         <app-top [data]="account" [movements]="movements" />
         <div class="my-6">
-            <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" (userEmitter)="reloadUser()"/>
+            <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" />
         </div>
         <p-dialog [(visible)]="visible" header="Product Details" [modal]="true">
             <ng-template #content>
@@ -84,7 +84,7 @@ const endpoint: any = environment.baseUrlSpring;
                         <label for="username">Programado</label>
                     </p-floatlabel>
                     <p-floatlabel>
-                        <p-datepicker formControlName="createdAt" appendTo="body" />
+                        <p-datepicker formControlName="createdAt" appendTo="body" dateFormat="dd/mm/yy" />
                         <label for="username">Primera aportación</label>
                     </p-floatlabel>
                 </form>
@@ -99,7 +99,6 @@ const endpoint: any = environment.baseUrlSpring;
         <p-dialog [(visible)]="visibleView" header="Detalles del Producto" [modal]="true">
             <ng-template #content>
                 <div class="p-4">
-
                     <!-- Grid de detalles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Columna Izquierda -->
@@ -160,7 +159,6 @@ const endpoint: any = environment.baseUrlSpring;
                     </div>
                 </div>
             </ng-template>
-
         </p-dialog>
     `
 })
@@ -170,7 +168,7 @@ export class Accountbyid implements OnInit {
     userLogin: any;
     account: any;
     product: any;
-    movements: any[]= [];
+    movements: any[] = [];
     spinner: boolean = false;
     visible = false;
     visibleView = false;
@@ -190,12 +188,12 @@ export class Accountbyid implements OnInit {
     ngOnInit(): void {
         this.isUpdate = false;
 
-        if (this.userService.user) {
-                this.userLogin = this.userService.user;
-            } else {
-                const storedUser = sessionStorage.getItem('us');
-                this.userLogin = storedUser ? JSON.parse(storedUser) : null;
-            }
+       if (sessionStorage.getItem('us')) {
+            const storedUser = sessionStorage.getItem('us');
+            this.userLogin = storedUser ? JSON.parse(storedUser) : null;
+        } else {
+            this.userLogin = this.userService.user;
+        }
 
         // Obtener el ID de la URL
         this.id = this.route.snapshot.paramMap.get('id'); // El '+' convierte el string a número
@@ -205,13 +203,22 @@ export class Accountbyid implements OnInit {
             this.id = params.get('id');
         });
         this.products = this.userLogin.product.filter((product: any) => product.aid === Number(this.id));
-        this.movements = this.userLogin.movements.filter((mov:any) => mov.aid === Number(this.id))
+        this.movements = this.userLogin.movements.filter((mov: any) => mov.aid === Number(this.id));
         this.formGroup = new FormGroup({
             type: new FormControl<any | null>(null, Validators.required),
             name: new FormControl<any | null>(null, Validators.required),
             createdAt: new FormControl<any | null>(null, Validators.required),
             program: new FormControl<any | null>(null, Validators.required),
             cuota: new FormControl<any | null>(null, Validators.required)
+        });
+        this.formGroup.get('program')?.valueChanges.subscribe((value) => {
+            const programControl = this.formGroup.get('createdAt');
+            if (value?.name === 'Eventual') {
+                programControl?.disable();
+                programControl?.setValue(null); // Opcional: limpiar el valor cuando se deshabilita
+            } else {
+                programControl?.enable();
+            }
         });
         this.options = [
             { name: 'Ingreso', code: 'NY' },
@@ -228,7 +235,7 @@ export class Accountbyid implements OnInit {
         this.cols = [
             { field: 'name', header: 'Asunto', customExportHeader: 'Product Code' },
             { field: 'type', header: 'Tipo' },
-            { field: 'cuota', header: 'Cuota', pipe:'currency' }
+            { field: 'cuota', header: 'Cuota', pipe: 'currency' }
         ];
         this.loadAccount();
     }
@@ -277,14 +284,15 @@ export class Accountbyid implements OnInit {
             this.products.push(resp);
             this.userLogin.product = this.products;
             // Ahora reloadUser() retorna un Observable, así que podemos suscribirnos
-        Utils.reloadUser(this.baseService, this.userService).subscribe(() => {
-            // Esto se ejecuta SOLO después de que reloadUser() haya terminado
-            this.userLogin = this.userService.user;
-            this.movements = this.userLogin.movements
-            this.loadAccount();
-            this.visible = false;
-            this.spinner = false;
-        });
+            Utils.reloadUser(this.baseService, this.userService).subscribe((resp: any) => {
+                // Esto se ejecuta SOLO después de que reloadUser() haya terminado
+                this.userService.user = resp;
+                this.userLogin = this.userService.user;
+                this.movements = this.userLogin.movements.filter((mov: any) => mov.aid === Number(this.id));
+                this.loadAccount();
+                this.visible = false;
+                this.spinner = false;
+            });
         });
     }
     update() {
@@ -301,14 +309,16 @@ export class Accountbyid implements OnInit {
             this.baseService.getItems(endpoint + 'users/full/' + data.uid).subscribe((resp: any) => {
                 this.products = resp.product;
                 this.userLogin.product = this.products;
-                 Utils.reloadUser(this.baseService, this.userService)
-                this.visible = false;
-                this.spinner = false;
+                Utils.reloadUser(this.baseService, this.userService).subscribe(() => {
+                    // Esto se ejecuta SOLO después de que reloadUser() haya terminado
+                    this.userService.user = resp;
+                    this.userLogin = this.userService.user;
+                    this.movements = this.userLogin.movements.filter((mov: any) => mov.aid === Number(this.id));
+                    this.loadAccount();
+                    this.visible = false;
+                    this.spinner = false;
+                });
             });
         });
-    }
-
-    reloadUser() {
-        Utils.reloadUser(this.baseService,this.userService)
     }
 }

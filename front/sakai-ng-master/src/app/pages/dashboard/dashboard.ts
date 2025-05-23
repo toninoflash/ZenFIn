@@ -18,7 +18,7 @@ const endpoint: any = environment.baseUrlSpring;
     providers: [UserService],
     template: `
         <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
+            <app-stats-widget class="contents" [dataSource] = "movements"/>
             <div class="col-span-12 xl:col-span-6">
                 <app-recent-sales-widget [products]="movements" [cols]="cols" (viewEmitter)="viewModal($event)" />
                 <app-best-selling-widget />
@@ -83,11 +83,11 @@ export class Dashboard implements OnInit {
         private baseService: BaseServiceService
     ) {}
     ngOnInit(): void {
-        if (this.userService.user) {
-            this.userLogin = this.userService.user;
-        } else {
+       if (sessionStorage.getItem('us')) {
             const storedUser = sessionStorage.getItem('us');
             this.userLogin = storedUser ? JSON.parse(storedUser) : null;
+        } else {
+            this.userLogin = this.userService.user;
         }
         this.movements = this.userLogin.movements;
         this.cols = [

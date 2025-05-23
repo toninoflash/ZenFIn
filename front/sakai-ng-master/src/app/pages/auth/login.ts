@@ -15,12 +15,12 @@ import { firstValueFrom } from 'rxjs';
 import { User } from '../../core/models/user';
 import { Utils } from '../../core/utils';
 import { Toast } from 'primeng/toast';
-const endpoint: any = environment.baseUrlSpring+"users";
+const endpoint: any = environment.baseUrlSpring + 'users';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator,Toast],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, Toast],
     providers: [UserService, BaseServiceService, MessageService],
     template: `
         <app-floating-configurator />
@@ -64,14 +64,12 @@ const endpoint: any = environment.baseUrlSpring+"users";
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidates la contraseña?</span>
                             </div>
-                            <p-button label="Entrar" styleClass="w-full" (onClick)="login()"
-                            [loading]="spinner"
-          [loadingIcon]="'pi pi-spinner'"></p-button>
+                            <p-button label="Entrar" styleClass="w-full" (onClick)="login()" [loading]="spinner" [loadingIcon]="'pi pi-spinner'"></p-button>
                         </div>
                     </div>
                 </div>
             </div>
-<p-toast />
+            <p-toast />
         </div>
     `
 })
@@ -82,45 +80,41 @@ export class Login {
 
     checked: boolean = false;
 
-  spinner: boolean = false;
+    spinner: boolean = false;
 
-constructor(
-    private userService: UserService,
-    private baseService: BaseServiceService,
-    private router: Router,
-    private messageService: MessageService,
-  ) {}
+    constructor(
+        private userService: UserService,
+        private baseService: BaseServiceService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
     async login(): Promise<void> {
+        const url = `${endpoint}/validate`;
+        const loginUser = { username: this.email, password: this.password };
 
+        this.spinner = true;
 
-    const url = `${endpoint}/validate`;
-    const loginUser ={ username:this.email,password:this.password}
+        try {
+            const validationRes = await firstValueFrom(this.baseService.getItemsWithParams(url, loginUser));
 
-    this.spinner = true;
+            if (!validationRes) {
+                this.handleError('No se ha podido encontrar el usuario');
+                return;
+            }
 
-    try {
-      const validationRes = await firstValueFrom(this.baseService.getItemsWithParams(url, loginUser));
+            const loginRes: any = await firstValueFrom(this.userService.login(loginUser));
 
-      if (!validationRes) {
-        this.handleError('No se ha podido encontrar el usuario');
-        return;
-      }
-
-      const loginRes: any = await firstValueFrom(this.userService.login(loginUser));
-
-      this.userService.user = validationRes as User;
-      sessionStorage.setItem('token', loginRes.access_token);
-      this.router.navigate(["/dashboard"]);
-
-    } catch (error) {
-      this.handleError('Error al validar o iniciar sesión');
-    } finally {
-      this.spinner = false;
+            this.userService.user = validationRes as User;
+            sessionStorage.setItem('token', loginRes.access_token);
+            this.router.navigate(['/dashboard']);
+        } catch (error) {
+            this.handleError('Error al validar o iniciar sesión');
+        } finally {
+            this.spinner = false;
+        }
     }
-  }
 
-  private handleError(message: string): void {
-    Utils.showMessage(this.messageService, 'error', 'Error', message);
-  }
-
+    private handleError(message: string): void {
+        Utils.showMessage(this.messageService, 'error', 'Error', message);
+    }
 }

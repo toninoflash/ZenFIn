@@ -12,6 +12,7 @@ import { Crud } from './app/pages/crud/crud';
 import { Credit } from './app/pages/credit/credit';
 import { Piggy } from './app/pages/piggy/piggy';
 import { Profile } from './app/pages/profile/profile';
+import { Simulator } from './app/layout/component/app.simulator';
 
 export const appRoutes: Routes = [
     {
@@ -26,6 +27,7 @@ export const appRoutes: Routes = [
             { path: 'credit', component: Credit,canActivate: [AuthGuard] },
             { path: 'piggy', component: Piggy,canActivate: [AuthGuard] },
             { path: 'profile', component: Profile,canActivate: [AuthGuard] },
+            { path: 'simulator', component: Simulator,canActivate: [AuthGuard] },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

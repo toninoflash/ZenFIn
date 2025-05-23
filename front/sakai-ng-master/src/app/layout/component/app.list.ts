@@ -107,6 +107,7 @@ export class AppLayout {
             { name: 'Barcelona', code: 'BRC' },
             { name: 'Rome', code: 'RM' }
         ];
+        console.log(this.dataSource);
     }
 
     getSeverity(product: Product) {

@@ -43,7 +43,7 @@ export class AppMenu {
                         label: 'Prestamos',
                         icon: 'pi pi-fw pi-credit-card',
                         items: [
-                            { label: 'Simular', icon: 'pi pi-fw pi-bookmark' }
+                            { label: 'Simular', icon: 'pi pi-fw pi-bookmark', routerLink: ['/simulator'] }
                         ]
                     },
                     {

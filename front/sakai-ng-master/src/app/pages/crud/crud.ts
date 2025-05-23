@@ -77,7 +77,7 @@ interface ExportColumn {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+            [globalFilterFields]="globalFilterFields"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedProducts"
             [rowHover]="true"
@@ -161,7 +161,7 @@ export class Crud implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     exportColumns!: ExportColumn[];
-
+    globalFilterFields: string[] = [];
     constructor(
         private productService: ProductService,
         private messageService: MessageService,
@@ -174,6 +174,7 @@ export class Crud implements OnInit {
 
     ngOnInit() {
         this.loadDemoData();
+        this.globalFilterFields = this.cols.map(col => col.field);
     }
 
     loadDemoData() {

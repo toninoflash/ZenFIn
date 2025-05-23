@@ -63,7 +63,7 @@ const endpoint: any = environment.baseUrlSpring;
                     <i class="pi pi-wallet text-2xl text-blue-600 mr-4"></i>
                     <div class="pr-4">
                       <div class="font-medium">{{account.type}}</div>
-                      <div class="text-sm text-gray-600">{{account.iban}}</div>
+                      <div class="text-sm text-primary">{{account.iban}}</div>
                     </div>
                     <div class="ml-auto text-right">
                       <div class="font-medium">{{account.balance}}€</div>
