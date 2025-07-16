@@ -11,10 +11,10 @@
     <packaging>pom</packaging>
     <modules>
         <module>userservice</module>
-        <module>roles</module>
         <module>account</module>
         <module>product</module>
         <module>movementservice</module>
+        <module>creditservice</module>
     </modules>
     <properties>
         <spring-cloud-dependencies.version>2023.0.0</spring-cloud-dependencies.version>  

@@ -90,6 +90,20 @@ services:
     depends_on:
       - registry-discovery
 
+  creditservice_image:
+    container_name: bd-credit_service
+    image: creditservice_image:0.0.1-SNAPSHOT
+    environment:
+      - EUREKA_SERVER=http://registry-discovery:8761/eureka/
+      - JAVA_OPTS=
+        -Xms256M
+        -Xmx256M
+
+    depends_on:
+      - registry-discovery
+
+
+
   apigateway_image:
       container_name: id_apigateway_image
       image: apigateway_image:0.0.1-SNAPSHOT   
@@ -110,7 +124,7 @@ services:
     environment:
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
       - KEYCLOACK_SERVER=http://keycloak_server:8080/realms/
-      - KEYCLOACK_REAL_ID=lzVQPredR9XQigpstilXCvxl56FeOEsIOAUXzACxirw
+      - KEYCLOACK_REAL_ID=ATgGIboE7n3VOPe7qDV7X3gaz7Blaay7pS0Z1GIsjcY
       - JAVA_OPTS=
          -Xms256M 
          -Xmx256Ms

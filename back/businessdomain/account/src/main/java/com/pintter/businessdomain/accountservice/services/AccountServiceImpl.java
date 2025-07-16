@@ -4,7 +4,6 @@
  */
 package com.pintter.businessdomain.accountservice.services;
 
-import com.pintter.businessdomain.accountservice.common.BusinesTraslation;
 import com.pintter.businessdomain.accountservice.common.BusinessTransactions;
 import com.pintter.businessdomain.accountservice.dto.AccountDto;
 import com.pintter.businessdomain.accountservice.entities.Account;
@@ -66,6 +65,30 @@ public class AccountServiceImpl implements IAccountService {
             resAccount.setIban(accountDto.getIban());
             resAccount.setCurrency(accountDto.getCurrency());
             resAccount.setStatus(accountDto.getStatus());
+
+        } else {
+            BusinessRuleException businessRuleException = new BusinessRuleException("0002", "Error validación. Transacion no localizada. ", HttpStatus.PRECONDITION_FAILED);
+            throw businessRuleException;
+        }
+        log.info("resAccount:::::::" + resAccount);
+        AccountDto save = accountMapper.toDto(accountRepository.save(resAccount));
+        return save;
+    }
+
+    @Override
+    public AccountDto updateAccountBalance(Long id, AccountDto accountDto) throws BusinessRuleException {
+        // Implementation here
+        Optional<Account> opt = accountRepository.findById(id);
+        log.info("resAccount:::::::" + opt.get());
+        Account resAccount = opt.get();
+        if (resAccount != null) {
+            resAccount.setId(id);
+            resAccount.setUpdatedAt(LocalDateTime.now());
+            if(accountDto.getType().equals("Ingreso")) {
+                resAccount.setBalance(resAccount.getBalance().add(accountDto.getBalance()));
+            } else {
+                resAccount.setBalance(resAccount.getBalance().subtract(accountDto.getBalance()));
+            }
 
         } else {
             BusinessRuleException businessRuleException = new BusinessRuleException("0002", "Error validación. Transacion no localizada. ", HttpStatus.PRECONDITION_FAILED);

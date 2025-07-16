@@ -16,4 +16,5 @@ import java.util.Optional;
  * @author Pc
  */
 public interface MovementRepository  extends JpaRepository<Movement, Long> {
+    List<Movement> findByUid (Long uid);
 }

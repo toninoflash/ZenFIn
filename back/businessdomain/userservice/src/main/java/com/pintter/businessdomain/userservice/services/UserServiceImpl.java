@@ -74,11 +74,15 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toOptional(optUser);
         List<?> account = businessTransactions.getAccount(id);
         List<?> products = businessTransactions.getProduct(id);
+        List<?> movements = businessTransactions.getMovement(id);
+        List<?> credits = businessTransactions.getCredits(id);
 
         if (user != null) {
             UserDto dto = userMapper.toDto(user);
             dto.setAccount(account);
             dto.setProduct(products);
+            dto.setMovements(movements);
+            dto.setCredits(credits);
             return dto;
         } else {
             BusinessRuleException businessRuleException = new BusinessRuleException("0002", "Error validación. Transacion no localizada. ", HttpStatus.PRECONDITION_FAILED);

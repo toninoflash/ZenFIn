@@ -1,30 +1,27 @@
-package com.pintter.businessdomain.userservice.transactions;
+package com.pintter.businessdomain.credit.transactions;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.pintter.businessdomain.userservice.repository.UserRepository;
+import com.pintter.businessdomain.credit.dto.MovementDto;
+import com.pintter.businessdomain.credit.repository.CreditRepository;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class BusinessTransactions {
     @Autowired
-    private UserRepository userRepository;
+    private CreditRepository userRepository;
 
     @Autowired
     private WebClient.Builder webClientBuilder;
@@ -50,97 +47,18 @@ public class BusinessTransactions {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
-    public List<?> getAccount(Long id) {
+    public MovementDto createMovement(MovementDto movement) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://BUSINESSDOMAIN-ACCOUNTSERVICE/api/account")
+                .baseUrl("http://BUSINESSDOMAIN-MOVEMENTSERVICE/api/movement")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
-        List<?> accountList = build.method(HttpMethod.GET).uri(uriBuilder -> uriBuilder
-                        .path("/user/full")
-                        .queryParam("uid", id)
-                        .build())
-                .retrieve().bodyToFlux(JsonNode.class).collectList().block();
-        return accountList;
-    }
+        MovementDto response = build.post()
+                .bodyValue(movement)
+                .retrieve()
+                .bodyToMono(MovementDto.class)
+                .block();
 
-    public List<JsonNode> getProduct(Long id) {
-        try {
-            WebClient build = webClientBuilder
-                    .clientConnector(new ReactorClientHttpConnector(client))
-                    .baseUrl("http://BUSINESSDOMAIN-PRODUCTSERVICE/api/product")
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-
-            return build.get()
-                    .uri("/full/{id}", id)
-                    .retrieve()
-                    .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(), // Solo maneja errores reales
-                            response -> response.bodyToMono(String.class)
-                                    .flatMap(body -> Mono.error(new RuntimeException(
-                                            "Error from Follower service: " + response.statusCode() + " - " + body
-                                    )))
-                    )
-                    .bodyToMono(new ParameterizedTypeReference<List<JsonNode>>() {}) // Mejor deserialización
-                    .blockOptional()
-                    .orElseGet(List::of); // Si es vacío, retorna lista vacía
-        } catch (Exception e) {
-            System.err.println("Error fetching followers: " + e.getMessage());
-            return List.of();
-        }
-    }
-
-    public List<JsonNode> getMovement(Long uid) {
-        try {
-            WebClient build = webClientBuilder
-                    .clientConnector(new ReactorClientHttpConnector(client))
-                    .baseUrl("http://BUSINESSDOMAIN-MOVEMENTSERVICE/api/movement")
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-
-            return build.get()
-                    .uri("/full/{uid}", uid)
-                    .retrieve()
-                    .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(), // Solo maneja errores reales
-                            response -> response.bodyToMono(String.class)
-                                    .flatMap(body -> Mono.error(new RuntimeException(
-                                            "Error from Follower service: " + response.statusCode() + " - " + body
-                                    )))
-                    )
-                    .bodyToMono(new ParameterizedTypeReference<List<JsonNode>>() {}) // Mejor deserialización
-                    .blockOptional()
-                    .orElseGet(List::of); // Si es vacío, retorna lista vacía
-        } catch (Exception e) {
-            System.err.println("Error fetching followers: " + e.getMessage());
-            return List.of();
-        }
-    }
-    public List<JsonNode> getCredits(Long id) {
-        try {
-            WebClient build = webClientBuilder
-                    .clientConnector(new ReactorClientHttpConnector(client))
-                    .baseUrl("http://BUSINESSDOMAIN-CREDITSERVICE/api/credit")
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-
-            return build.get()
-                    .uri("/full/{id}", id)
-                    .retrieve()
-                    .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(), // Solo maneja errores reales
-                            response -> response.bodyToMono(String.class)
-                                    .flatMap(body -> Mono.error(new RuntimeException(
-                                            "Error from Follower service: " + response.statusCode() + " - " + body
-                                    )))
-                    )
-                    .bodyToMono(new ParameterizedTypeReference<List<JsonNode>>() {}) // Mejor deserialización
-                    .blockOptional()
-                    .orElseGet(List::of); // Si es vacío, retorna lista vacía
-        } catch (Exception e) {
-            System.err.println("Error fetching followers: " + e.getMessage());
-            return List.of();
-        }
+        return response;
     }
 
 }

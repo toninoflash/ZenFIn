@@ -7,6 +7,7 @@ package com.pintter.businessdomain.accountservice.controller;
 
 import com.pintter.businessdomain.accountservice.common.AccountConstants;
 import com.pintter.businessdomain.accountservice.dto.AccountDto;
+import com.pintter.businessdomain.accountservice.dto.MovementDto;
 import com.pintter.businessdomain.accountservice.entities.Account;
 import com.pintter.businessdomain.accountservice.exceptions.BusinessRuleException;
 import com.pintter.businessdomain.accountservice.mapper.AccountMapper;
@@ -123,6 +124,15 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("No es aceptable");
+        }
+    }
+    @PutMapping("/full/{id}")
+    public AccountDto updateAccountBalance(@PathVariable(name="id") Long id, @RequestBody AccountDto accountDto) throws BusinessRuleException {
+        if (accountDto != null) {
+            AccountDto accountDtoUpdate = accountService.updateAccountBalance(id, accountDto);
+            return accountDtoUpdate;
+        } else {
+            return new AccountDto();
         }
     }
     

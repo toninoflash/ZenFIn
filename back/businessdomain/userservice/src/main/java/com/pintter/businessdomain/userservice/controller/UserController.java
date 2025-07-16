@@ -4,18 +4,21 @@
  */
 package com.pintter.businessdomain.userservice.controller;
 
+import com.pintter.businessdomain.userservice.dto.EmailRequestDto;
 import com.pintter.businessdomain.userservice.dto.FollowerDto;
 import com.pintter.businessdomain.userservice.dto.UserDto;
 import com.pintter.businessdomain.userservice.entities.User;
 import com.pintter.businessdomain.userservice.exceptions.BusinessRuleException;
 import com.pintter.businessdomain.userservice.mapper.UserMapper;
 import com.pintter.businessdomain.userservice.repository.UserRepository;
+import com.pintter.businessdomain.userservice.services.IEmailService;
 import com.pintter.businessdomain.userservice.services.UserService;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private IEmailService emailService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -85,24 +90,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
     }
-    @PostMapping("/followers")
-    public ResponseEntity<?> getFollower(@RequestBody List<FollowerDto> follower) throws BusinessRuleException {
+    @PostMapping("/register")
+    public ResponseEntity<?>  geRegister(@RequestBody UserDto userDto) throws BusinessRuleException, MessagingException {
 
-        List<UserDto> userDto = follower.stream()
-                .map(f -> {
-                    try {
-                        return userService.getFull(f.getFollowedId());
-                    } catch (BusinessRuleException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toList());
-
-        if (userDto.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No existe el usuario");
-        } else {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDto);
-        }
+        emailService.sendConfirmationEmail(userDto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Email enviado con éxito!");
     }
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto) throws BusinessRuleException, UnknownHostException {

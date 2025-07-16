@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/businessdomain/account/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/businessdomain/artwork/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/businessdomain/artwork/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/businessdomain/creditservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/businessdomain/creditservice/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/businessdomain/exhibition/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/businessdomain/exhibition/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/businessdomain/follower/src/main/java" charset="UTF-8" />

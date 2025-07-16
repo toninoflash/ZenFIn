@@ -6,10 +6,13 @@ package com.pintter.businessdomain.movement.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -17,7 +20,10 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "users")
+@Table(name = "movements")
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class Movement {
 
     @Id
@@ -28,8 +34,8 @@ public class Movement {
     private String name; // Nombre del producto (ej. "Tarjeta Oro")
     private String type; // Tipo de producto (ej. "credit-card", "insurance", etc.)
     private String currency = "EUR";
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private String program;
-    private Long cuota;
+    private BigDecimal cuota;
 
 }

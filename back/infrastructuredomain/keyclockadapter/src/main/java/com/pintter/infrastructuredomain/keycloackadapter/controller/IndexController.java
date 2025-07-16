@@ -32,7 +32,7 @@ import org.springframework.http.ResponseEntity;
 public class IndexController {
     private Logger logger = LoggerFactory.getLogger(IndexController.class);
 
-    private final String USERNAME = "admin";
+    private final String USERNAME = "billing";
     private final String PASSWORD = "qwerty";
 
     @Autowired

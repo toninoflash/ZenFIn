@@ -1,4 +1,4 @@
-package com.pintter.businessdomain.roles.common;
+package com.pintter.businessdomain.credit.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +16,10 @@ public class SpringSecurity {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/credit/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/credit/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/credit/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/credit/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

@@ -43,10 +43,10 @@ spring:
         uri: lb://businessdomain-movementservice
         predicates:
           - Path=/api/movement/**
-      - id: exhibition_service
-        uri: lb://businessdomain-exhibition
+      - id: credit_service
+        uri: lb://businessdomain-creditservice
         predicates:
-          - Path=/api/exhibition/**
+          - Path=/api/credit/**
 
 logging:
   level:

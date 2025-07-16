@@ -1,6 +1,8 @@
 package com.pintter.businessdomain.movement.transactions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.pintter.businessdomain.movement.dto.AccountDto;
+import com.pintter.businessdomain.movement.dto.MovementDto;
 import com.pintter.businessdomain.movement.repository.MovementRepository;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.EpollChannelOption;
@@ -48,7 +50,7 @@ public class BusinessTransactions {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
-    public List<?> getTransactions(Long id) {
+    public List<?> addBalanceAccountUpdate(Long id) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
                 .baseUrl("http://BUSINESSDOMAIN-ARTWORKSERVICE/api/artwork")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -59,5 +61,24 @@ public class BusinessTransactions {
                         .build())
                 .retrieve().bodyToFlux(JsonNode.class).collectList().block();
         return transactions;
+    }
+    public AccountDto updateAccountBalance(AccountDto accountDto) {
+        WebClient build = webClientBuilder
+                .clientConnector(new ReactorClientHttpConnector(
+                        HttpClient.create()
+                                .responseTimeout(Duration.ofSeconds(5)) // <-- Aquí
+                ))
+                .baseUrl("http://BUSINESSDOMAIN-ACCOUNTSERVICE/api/account")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        AccountDto resp = build.put()
+                .uri("/full/{id}", accountDto.getId())
+                .bodyValue(accountDto)
+                .retrieve()
+                .bodyToMono(AccountDto.class)
+                .block();
+
+        return resp;
     }
 }

@@ -22,6 +22,6 @@ public interface ProductService {
     ProductDto createProduct(ProductDto productDto);
     ProductDto updateProduct(Long id, ProductDto productDto) throws BusinessRuleException;
     List<ProductDto> findByAid(Long aid);
-    List<ProductDto> findByUid(Long aid);
+    List<Product> findByUid(Long aid);
     void deleteProduct(Long id);
 }

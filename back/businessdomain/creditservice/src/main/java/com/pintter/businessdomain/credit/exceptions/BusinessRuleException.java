@@ -1,4 +1,4 @@
-package com.pintter.businessdomain.roles.exceptions;
+package com.pintter.businessdomain.credit.exceptions;
 
 
 /*

@@ -5,6 +5,7 @@
 package com.pintter.businessdomain.product.services;
 
 
+import com.pintter.businessdomain.product.controller.AccountDto;
 import com.pintter.businessdomain.product.dto.MovementDto;
 import com.pintter.businessdomain.product.dto.ProductDto;
 import com.pintter.businessdomain.product.entities.Product;
@@ -68,8 +69,13 @@ public class ProductServiceImpl implements ProductService {
         movementDto.setName(product.getName());
         movementDto.setType(product.getType());
         movementDto.setProgram(product.getProgram());
-        movementDto = businessTransactions.createMovement(movementDto);
-
+        try {
+            movementDto = businessTransactions.createMovement(movementDto);
+        } catch (Exception e) {
+            log.error("Error creating movement", e);
+            // Decide si quieres continuar sin el movimiento o lanzar la excepción
+        }
+      //  log.info("Balance account's update : "+ accountDto);
         return productMapper.toDto(product);
     }
 
@@ -101,8 +107,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public  List<ProductDto> findByUid(Long uid) {
-        return productMapper.toDtoList(productRepository.findByUid(uid));
+    public  List<Product> findByUid(Long uid) {
+        return productRepository.findByUid(uid);
     }
     @Override
     public  List<ProductDto> findByAid(Long aid) {

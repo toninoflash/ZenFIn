@@ -19,6 +19,7 @@ import java.util.Optional;
 public interface MovementService {
     List<MovementDto> getAllMovements();
     Optional<Movement> getMovementById(Long id);
+    List<Movement>  getMovementByUid(Long uid);
     MovementDto createMovement(MovementDto movementDto);
     MovementDto updateMovement(Long id, MovementDto movementDto) throws BusinessRuleException;
     void deleteMovement(Long id);

@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.pintter.businessdomain.accountservice.dto;
+package com.pintter.businessdomain.product.controller;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDateTime;

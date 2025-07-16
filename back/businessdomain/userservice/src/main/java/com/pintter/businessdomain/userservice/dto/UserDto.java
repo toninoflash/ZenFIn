@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -34,6 +35,7 @@ public class UserDto {
     private String role;
     private List<?> account;
     private List<?> product;
-
+    private List<?> movements;
+    private List<?> credits;
 
 }

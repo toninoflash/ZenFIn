@@ -21,4 +21,5 @@ public interface IAccountService {
     AccountDto updateAccount(Long id, AccountDto accountDto) throws BusinessRuleException;
     void deleteAccount(Long id);
     AccountDto getFull(Long id) throws BusinessRuleException;
+    AccountDto updateAccountBalance(Long id, AccountDto accountDto) throws BusinessRuleException;
 }

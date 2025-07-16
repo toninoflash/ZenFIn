@@ -7,6 +7,7 @@ package com.pintter.businessdomain.accountservice.dto;
 import jakarta.persistence.Column;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class AccountDto {
     private Long uid; // ID del usuario propietario de la cuenta
     private String iban;
     private String type; // Ej: "checking", "savings", "joint"
-    private Long balance;
+    private BigDecimal balance;
     private String currency = "EUR"; // Por defecto
     private Boolean status = true;
     private LocalDateTime createdAt;

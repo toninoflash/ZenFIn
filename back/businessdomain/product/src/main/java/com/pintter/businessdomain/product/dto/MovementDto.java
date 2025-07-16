@@ -2,6 +2,7 @@ package com.pintter.businessdomain.product.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,5 +14,5 @@ public class MovementDto {
     private String currency = "EUR";
     private LocalDateTime createdAt = LocalDateTime.now();
     private String program;
-    private Long cuota;
+    private BigDecimal cuota;
 }

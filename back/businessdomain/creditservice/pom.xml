@@ -8,9 +8,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <groupId>com.pintter.businessdomain</groupId>
-    <artifactId>roles</artifactId>
+    <artifactId>creditservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>roles</name>
+    <name>creditservice</name>
     <description>Demo project for Spring Boot</description>
     <dependencies>
         <dependency>

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.pintter.businessdomain.roles.common;
+package com.pintter.businessdomain.credit.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

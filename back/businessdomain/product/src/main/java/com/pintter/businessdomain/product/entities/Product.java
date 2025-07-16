@@ -6,6 +6,7 @@ package com.pintter.businessdomain.product.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +34,6 @@ public class Product {
     private LocalDateTime updatedAt = LocalDateTime.now();
     private LocalDateTime endedAt = LocalDateTime.now();
     private String program;
-    private Long balance;
-    private Long cuota;
+    private BigDecimal balance;
+    private BigDecimal cuota;
 }

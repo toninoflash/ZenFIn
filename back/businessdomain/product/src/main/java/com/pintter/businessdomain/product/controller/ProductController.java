@@ -57,8 +57,10 @@ public class ProductController {
 
 
     @GetMapping("/full/{aid}")
-    public ResponseEntity<List<ProductDto>> getFull(@PathVariable(name = "aid") Long aid) throws BusinessRuleException {
-        List<ProductDto> productDtoList = productService.findByAid(aid);
+    public ResponseEntity<List<ProductDto>> getFull(@PathVariable(name = "aid") Long uid) throws BusinessRuleException {
+        List<Product> productList = productService.findByUid(uid);
+        List<ProductDto> productDtoList = productMapper.toDtoList(productList);
+
         if (productDtoList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } else {

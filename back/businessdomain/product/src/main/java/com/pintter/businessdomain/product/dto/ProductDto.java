@@ -4,6 +4,7 @@
  */
 package com.pintter.businessdomain.product.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
@@ -21,11 +22,11 @@ public class ProductDto {
     private String type; // Tipo de producto (ej. "credit-card", "insurance", etc.)
     private String currency = "EUR";
     private Boolean active = true;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt = LocalDateTime.now();
     private LocalDateTime endedAt = LocalDateTime.now();
     private String program;
-    private Long balance;
-    private Long cuota;
+    private BigDecimal balance;
+    private BigDecimal cuota;
 
 }

@@ -90,11 +90,11 @@ public class BusinessTransactions {
         }
     }
 
-    public List<JsonNode> getExhibition(Long uid) {
+    public List<JsonNode> getMovement(Long uid) {
         try {
             WebClient build = webClientBuilder
                     .clientConnector(new ReactorClientHttpConnector(client))
-                    .baseUrl("http://BUSINESSDOMAIN-EXHIBITION/api/exhibition")
+                    .baseUrl("http://BUSINESSDOMAIN-MOVEMENTSERVICE/api/movement")
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build();
 
@@ -116,4 +116,31 @@ public class BusinessTransactions {
             return List.of();
         }
     }
+    public List<JsonNode> getCredits(Long id) {
+        try {
+            WebClient build = webClientBuilder
+                    .clientConnector(new ReactorClientHttpConnector(client))
+                    .baseUrl("http://BUSINESSDOMAIN-CREDITSERVICE/api/credit")
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .build();
+
+            return build.get()
+                    .uri("/full/{id}", id)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.is4xxClientError() || status.is5xxServerError(), // Solo maneja errores reales
+                            response -> response.bodyToMono(String.class)
+                                    .flatMap(body -> Mono.error(new RuntimeException(
+                                            "Error from Follower service: " + response.statusCode() + " - " + body
+                                    )))
+                    )
+                    .bodyToMono(new ParameterizedTypeReference<List<JsonNode>>() {}) // Mejor deserialización
+                    .blockOptional()
+                    .orElseGet(List::of); // Si es vacío, retorna lista vacía
+        } catch (Exception e) {
+            System.err.println("Error fetching followers: " + e.getMessage());
+            return List.of();
+        }
+    }
+
 }

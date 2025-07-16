@@ -1,10 +1,10 @@
-package com.pintter.businessdomain.roles;
+package com.pintter.businessdomain.Credits;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RolesApplicationTests {
+class CreditsApplicationTests {
 
 	/*@Test
 	void contextLoads() {

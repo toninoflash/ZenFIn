@@ -1,4 +1,4 @@
-package com.pintter.businessdomain.product.dto;
+package com.pintter.businessdomain.credit.dto;
 
 import lombok.Data;
 

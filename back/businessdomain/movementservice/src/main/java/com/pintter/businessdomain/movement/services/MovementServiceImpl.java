@@ -55,11 +55,19 @@ public class MovementServiceImpl implements MovementService {
     }
 
     @Override
+    public List<Movement> getMovementByUid(Long uid) {
+        List<Movement> listMovement = movementRepository.findByUid(uid);
+        return listMovement;
+    }
+
+    @Override
     public MovementDto createMovement(MovementDto movementDto) {
         
 
         Movement movement = movementMapper.toEntity(movementDto);
-        movement.setCreatedAt(LocalDateTime.now());
+        if(movementDto.getCreatedAt() == null) {
+            movement.setCreatedAt(LocalDateTime.now());
+        }
         movement = movementRepository.save(movement);
         return movementMapper.toDto(movement);
     }
@@ -74,8 +82,6 @@ public class MovementServiceImpl implements MovementService {
 
         if (resMovement != null) {
             resMovement.setId(id);
-            
-
         } else {
             BusinessRuleException businessRuleException = new BusinessRuleException("0002", "Error validación. Transacion no localizada. ", HttpStatus.PRECONDITION_FAILED);
             throw businessRuleException;

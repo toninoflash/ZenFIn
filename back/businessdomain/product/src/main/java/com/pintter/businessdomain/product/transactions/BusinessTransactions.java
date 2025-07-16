@@ -1,6 +1,7 @@
 package com.pintter.businessdomain.product.transactions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.pintter.businessdomain.product.controller.AccountDto;
 import com.pintter.businessdomain.product.dto.MovementDto;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.EpollChannelOption;
@@ -28,12 +29,6 @@ public class BusinessTransactions {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    /*private final WebClient.Builder webClientBuilder;
-
-    public CustomerRestController(WebClient.Builder webClientBuilder) {
-        this.webClientBuilder = webClientBuilder;
-    }*/
-
     //webClient requires HttpClient library to work propertly
     HttpClient client = HttpClient.create()
             //Connection Timeout: is a period within which a connection between a client and a server must be established
@@ -50,7 +45,7 @@ public class BusinessTransactions {
 
     public MovementDto createMovement(MovementDto movement) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://BUSINESSDOMAIN-MOVEMENTSERVICE/api/movement/full")
+                .baseUrl("http://BUSINESSDOMAIN-MOVEMENTSERVICE/api/movement")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
         MovementDto response = build.post()

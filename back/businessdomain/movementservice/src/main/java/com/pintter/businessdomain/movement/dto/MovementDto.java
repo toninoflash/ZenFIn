@@ -4,6 +4,7 @@
  */
 package com.pintter.businessdomain.movement.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class MovementDto {
     private String name; // Nombre del producto (ej. "Tarjeta Oro")
     private String type; // Tipo de producto (ej. "credit-card", "insurance", etc.)
     private String currency = "EUR";
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private String program;
-    private Long cuota;
+    private BigDecimal cuota;
 }

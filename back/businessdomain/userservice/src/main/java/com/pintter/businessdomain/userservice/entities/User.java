@@ -51,5 +51,10 @@ public class User {
     private List<?> account;
     @Transient
     private List<?> product;
+    @Transient
+    private List<?> movements;
+    @Transient
+    private List<?> credits;
+
     // Getters, Setters, Constructors
 }
