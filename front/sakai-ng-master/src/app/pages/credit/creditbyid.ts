@@ -9,7 +9,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Select, SelectModule } from 'primeng/select';
 import { environment } from '../../../enviroments/environment';
-import { Top } from './components/top';
 import { ActivatedRoute } from '@angular/router';
 import { Crud } from '../crud/crud';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -29,17 +28,18 @@ import { DatePicker } from 'primeng/datepicker';
 import { Utils } from '../../core/utils';
 import { CustomDatePipe } from '../../core/pipes/custom-date-pipe';
 import { NumberFormatPipe } from '../../core/pipes/number-formt';
-import { Topcredit } from "../credit/components/topcredit";
+import { Top } from '../account/components/top';
+import { Topcredit } from "./components/topcredit";
+import { Credit } from './credit';
+import { List } from "./components/list";
 const endpoint: any = environment.baseUrlSpring;
 @Component({
-    selector: 'app-accountbyid',
+    selector: 'app-creditbyid',
     imports: [
     FloatLabelModule,
     InputTextModule,
     FormsModule,
     ReactiveFormsModule,
-    Top,
-    Crud,
     CommonModule,
     ButtonModule,
     RippleModule,
@@ -58,12 +58,15 @@ const endpoint: any = environment.baseUrlSpring;
     DatePicker,
     CustomDatePipe,
     NumberFormatPipe,
+    Topcredit,
+    List
 ],
     providers: [ConfirmationService],
     template: `
-        <app-top [data]="account" [movements]="movements" />
+        <app-topcredit [data]="credit[0]" [movements]="movements" [userLogin]="userLogin"/>
         <div class="my-6">
-            <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" />
+            <!-- <app-crud (visibleEmitter)="visibilityModal()" (editEmitter)="loadModal($event)" (viewEmitter)="viewModal($event)" [dataSource]="products" [cols]="cols" /> -->
+            <app-listtable [credit]="credit[0]" (viewEmitter)="viewModal($event)" [cols]="cols" />
         </div>
         <p-dialog [(visible)]="visible" header="Product Details" [modal]="true">
             <ng-template #content>
@@ -93,7 +96,7 @@ const endpoint: any = environment.baseUrlSpring;
 
             <ng-template #footer>
                 <p-button label="Cancelar" icon="pi pi-times" text />
-                <p-button label="Aceptar" icon="pi pi-check" [disabled]="formGroup.invalid" (onClick)="isUpdate ? update() : create()"  [loading]="spinner" [loadingIcon]="'pi pi-spinner'"/>
+                <p-button label="Aceptar" icon="pi pi-check" [disabled]="formGroup.invalid" (onClick)="isUpdate ? update() : create()" />
             </ng-template>
         </p-dialog>
 
@@ -163,10 +166,14 @@ const endpoint: any = environment.baseUrlSpring;
         </p-dialog>
     `
 })
-export class Accountbyid implements OnInit {
-    title = 'Cuentas';
+export class Creditbyid implements OnInit {
+    title = 'Prestamos e hipotecas';
     id: any;
     userLogin: any;
+    credit:any
+
+
+
     account: any;
     product: any;
     movements: any[] = [];
@@ -203,8 +210,13 @@ export class Accountbyid implements OnInit {
         this.route.paramMap.subscribe((params) => {
             this.id = params.get('id');
         });
-        this.products = this.userLogin.product.filter((product: any) => product.aid === Number(this.id));
-        this.movements = this.userLogin.movements.filter((mov: any) => mov.aid === Number(this.id));
+        this.credit = this.userLogin.credits.filter((credit: any) => credit.id === Number(this.id));
+        this.cols = [
+            { field: 'name', header: 'Asunto' },
+            { field: 'type', header: 'Tipo', pipe: 'primary' },
+            { field: 'cuota', header: 'Cuota', pipe: 'currency' },
+            { field: 'createdAt', header: 'Fecha', pipe: 'date' }
+        ];
         this.formGroup = new FormGroup({
             type: new FormControl<any | null>(null, Validators.required),
             name: new FormControl<any | null>(null, Validators.required),
@@ -279,10 +291,8 @@ export class Accountbyid implements OnInit {
         data.program = data.program.name;
         data.balance = 0;
         data.currency = 'EUR';
-        const fechaOriginal = new Date(data.createdAt);
-        const fechaSumada = new Date(fechaOriginal);
-        fechaSumada.setDate(fechaSumada.getDate() + 1);
-        data.createdAt = fechaSumada; // Asegura que createdAt sea un objeto Date';
+        data.createdAt = 'EUR';
+
         const url = endpoint + 'product';
         this.spinner = true;
         this.baseService.postItem(url, data).subscribe((resp: any) => {

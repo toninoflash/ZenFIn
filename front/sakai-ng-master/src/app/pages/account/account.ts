@@ -87,17 +87,19 @@ export class Account implements OnInit {
         data.currency = 'EUR';
         const url = endpoint + 'account';
         this.spinner = true;
-        this.baseService.postItem(url, data).subscribe((resp: any) => {
-            this.accounts.push(resp);
-            this.userLogin.account = this.accounts;
+        this.baseService.postItem(url, data).subscribe((resp2: any) => {
+            // this.accounts.push(resp);
+            // this.userLogin.account = this.accounts;
             Utils.reloadUser(this.baseService, this.userService).subscribe((resp: any) => {
                 // Esto se ejecuta SOLO después de que reloadUser() haya terminado
                 console.log('Respuesta de reloadUser:', resp);
                 this.userService.user = resp;
                 this.userLogin = this.userService.user;
+                this.viewAccount(resp2.id);
                 this.visible = false;
                 this.spinner = false;
             });
+
         });
     }
 }

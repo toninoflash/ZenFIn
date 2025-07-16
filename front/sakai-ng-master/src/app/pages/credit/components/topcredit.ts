@@ -14,42 +14,15 @@ import { Dialog } from 'primeng/dialog';
 import { Tag } from 'primeng/tag';
 import { CustomDatePipe } from '../../../core/pipes/custom-date-pipe';
 import { AccordionModule } from 'primeng/accordion';
+import { Utils } from '../../../core/utils';
 const endpoint: any = environment.baseUrlSpring;
 
 @Component({
     standalone: true,
-    selector: 'app-top',
-    imports: [CommonModule, ButtonModule, MenuModule, NumberFormatPipe, RecentSalesWidget, ChartModule, Dialog, Tag, CustomDatePipe, AccordionModule],
+    selector: 'app-topcredit',
+    imports: [CommonModule, ButtonModule, MenuModule, NumberFormatPipe, ChartModule, Dialog, Tag, CustomDatePipe, AccordionModule],
 
     template: `
-        <div class="flex flex-col md:flex-row gap-8" *ngIf="!type">
-            <div class="md:w-1/2">
-                <div class="card flex flex-col sm:flex-row sm:items-center p-6 gap-4">
-                    <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
-                        <div class="flex flex-row md:flex-col justify-between items-start gap-2">
-                            <div>
-                                <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ data.type }}</span>
-                                <div class="text-2xl font-medium mt-2 text-primary hover:text-primary-300 cursor-pointer">{{ data.iban }}</div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col md:items-end gap-2">
-                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">Saldo disponible</span>
-                            <div class="flex flex-row-reverse md:flex-row gap-2">
-                                <p-button icon="pi pi-euro" [label]="data.balance | numberFormat" [disabled]="data.inventoryStatus === 'OUTOFSTOCK'" styleClass="flex-auto md:flex-initial whitespace-nowrap "></p-button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card flex flex-col sm:flex-row sm:items-center p-6 gap-4  justify-center">
-                    <p-chart type="doughnut" [data]="chartData" [options]="options" class="w-full md:w-[30rem]" />
-                </div>
-            </div>
-            <div class="md:w-1/2">
-                <div class="flex flex-col gap-4">
-                    <app-recent-sales-widget [products]="movements" [cols]="cols" (viewEmitter)="viewModal($event)" />
-                </div>
-            </div>
-        </div>
         <p-dialog [(visible)]="visibleView" header="Detalles del Movimiento" [modal]="true">
             <ng-template #content>
                 <div class="p-4">
@@ -92,14 +65,93 @@ const endpoint: any = environment.baseUrlSpring;
             </ng-template>
         </p-dialog>
 
+        <div class="">
+            <!-- Page title and controls -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <h1 class="text-2xl font-bold mb-4 md:mb-0">{{ data.type }} de {{ data.totalAmount | numberFormat }}</h1>
+            </div>
 
+            <!-- Summary cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="card p-4 rounded-lg shadow-sm border-l-4 border-primary-500">
+                    <div class="text-sm text-gray-500 mb-1">Importe pendiente</div>
+                    <div class="text-xl font-semibold">{{data.totalAmountPending | numberFormat}} €</div>
+                </div>
+                <div class="card p-4 rounded-lg shadow-sm border-l-4 border-primary-500">
+                    <div class="text-sm text-gray-500 mb-1">Cuota a pagar</div>
+                    <div class="text-lg font-semibold">{{ data.monthlyPayment | numberFormat }} €</div>
+                </div>
+                <div class="card p-4 rounded-lg shadow-sm border-l-4 border-primary-500">
+                    <div class="text-sm text-gray-500 mb-1">Fecha de vencimiento</div>
+                    <div class="text-lg font-semibold">{{ data.endDate | customDate }}</div>
+                </div>
+                <div class="card p-4 rounded-lg shadow-sm border-l-4 border-primary-500">
+                    <div class="text-sm text-gray-500 mb-1">Recibos pendientes de vencer</div>
+                    <div class="text-lg font-semibold">{{data.termPending}}</div>
+                </div>
+            </div>
+
+            <!-- Loan details accordion -->
+            <div class="mb-8">
+                <div class="accordion">
+                    <p-accordion value="">
+                        <p-accordion-panel value="0">
+                            <p-accordion-header>Detalle del préstamo</p-accordion-header>
+                            <p-accordion-content>
+                                <div class="relative rounded-lg ">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <!-- Column 1 -->
+                                        <div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Tipo de préstamo</label>
+                                                <div class="font-medium">{{ data.type }}</div>
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Cuenta vinculada</label>
+                                                <div class="font-medium">{{accountIban}}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Column 2 -->
+                                        <div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Titulares</label>
+                                                <div class="font-medium">{{ userLogin.name }} {{ userLogin.lastname }}</div>
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Fecha constitución</label>
+                                                <div class="font-medium">{{ data.createdAt | customDate }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Column 3 -->
+                                        <div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Importe interés</label>
+                                                <div class="font-medium">{{ data.totalInterest | numberFormat }} €</div>
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="block text-sm text-gray-500 mb-1">Tipo de interés</label>
+                                                <div class="font-medium">{{ data.term }}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+                    </p-accordion>
+                </div>
+            </div>
+        </div>
     `
 })
-export class Top implements OnInit, OnChanges {
+export class Topcredit implements OnInit, OnChanges {
     menu = null;
     @Input() data: any;
     @Input() movements: any[] = [];
     @Input() type: boolean = false;
+    @Input() userLogin: any;
+    accountIban: any;
     cols: any;
     options: any;
     chartData: any;
@@ -130,8 +182,9 @@ export class Top implements OnInit, OnChanges {
     });
 
     ngOnInit() {
-        this.setInvoice();
-        this.initChart();
+        // this.setInvoice();
+        // this.initChart();
+console.log("DATA: "+this.data.name);
         this.cols = [
             { field: 'name', header: 'Asunto' },
             { field: 'type', header: 'Tipo', pipe: 'primary' },
@@ -142,6 +195,7 @@ export class Top implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         this.setInvoice();
         this.initChart();
+        this.viewAccount();
     }
     initChart() {
         const documentStyle = getComputedStyle(document.documentElement);
@@ -186,10 +240,24 @@ export class Top implements OnInit, OnChanges {
             .filter((movement) => movement.type === 'Ingreso') // Filtra solo los ingresos
             .reduce((sum, movement) => sum + movement.cuota, 0);
         this.bill = this.movements
-            .filter((movement) => movement.type !== 'Ingreso' && movement.type !== 'Ahorro' ) // Filtra solo los ingresos
+            .filter((movement) => movement.type === 'Gasto') // Filtra solo los ingresos
             .reduce((sum, movement) => sum + movement.cuota, 0);
         this.piggi = this.movements
             .filter((movement) => movement.type === 'Ahorro') // Filtra solo los ingresos
             .reduce((sum, movement) => sum + movement.cuota, 0);
+    }
+
+    getAmountPending() {
+        return (Utils.getMonthsBetweenDates(new Date(), new Date(this.data.endDate)) * this.data.monthlyPayment).toFixed(2);
+    }
+    getMonthsPending() {
+        return Utils.getMonthsBetweenDates(new Date(), new Date(this.data.endDate));
+    }
+    viewAccount() {
+        const url = endpoint + 'account/' + this.data.aid;
+        this.baseService.getItems(url).subscribe((resp: any) => {
+            this.accountIban = resp.iban;
+
+        });
     }
 }

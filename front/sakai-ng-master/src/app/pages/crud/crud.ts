@@ -56,13 +56,12 @@ interface ExportColumn {
         InputIconModule,
         IconFieldModule,
         ConfirmDialogModule,
-                CustomDatePipe,
-                NumberFormatPipe
+        NumberFormatPipe
     ],
     template: `
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+                <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" *ngIf="newButton"/>
                 <p-button severity="secondary" label="Cancelar" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" />
             </ng-template>
 
@@ -145,6 +144,7 @@ export class Crud implements OnInit {
 
     @Input() dataSource: any[] = [];
     @Input() cols!: Column[];
+    @Input() newButton: boolean = true;
 
     productDialog: boolean = false;
 
@@ -174,7 +174,7 @@ export class Crud implements OnInit {
 
     ngOnInit() {
         this.loadDemoData();
-        this.globalFilterFields = this.cols.map(col => col.field);
+        this.globalFilterFields = this.cols.map((col) => col.field);
     }
 
     loadDemoData() {

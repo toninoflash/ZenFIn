@@ -40,19 +40,11 @@ export class AppMenu {
                 items: [
                     { label: 'Mis prestamos e hipotecas', icon: 'pi pi-fw pi-home', routerLink: ['/credit'] },
                     {
-                        label: 'Prestamos',
+                        label: 'Simular',
                         icon: 'pi pi-fw pi-credit-card',
-                        items: [
-                            { label: 'Simular', icon: 'pi pi-fw pi-bookmark', routerLink: ['/simulator'] }
-                        ]
+                        routerLink: ['/simulator']
+
                     },
-                    {
-                        label: 'Hipotecas',
-                        icon: 'pi pi-fw pi-home',
-                        items: [
-                            { label: 'Simular', icon: 'pi pi-fw pi-bookmark' }
-                        ]
-                    }
                 ]
             },
             {

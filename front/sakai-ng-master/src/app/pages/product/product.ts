@@ -3,7 +3,7 @@ import { AppLayout } from '../../layout/component/app.list';
 import { UserService } from '../../core/services/users/users.service';
 import { BaseServiceService } from '../../core/services/base-service.service';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { MenuModule } from 'primeng/menu';
@@ -198,16 +198,16 @@ const endpoint: any = environment.baseUrlSpring;
                 </div>
                 <div class="border-t border-gray-200"></div>
 
-                <div class="relative hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                <div class="relative hover:bg-gray-50 rounded-lg transition-colors duration-200" *ngFor="let loan of loansH">
                   <a class="absolute inset-0 z-10" href="#"></a>
                   <div class="flex items-center py-3 px-4 relative">
                     <i class="pi pi-home text-2xl text-yellow-500 mr-4"></i>
                     <div class="pr-4">
                       <div class="font-medium">Préstamo hipotec.</div>
-                      <div class="text-sm text-gray-600">317.548382-50</div>
+                      <div class="text-sm text-gray-600">{{loan.name}}</div>
                     </div>
                     <div class="ml-auto text-right">
-                      <div class="font-medium">10.566,92 €</div>
+                      <div class="font-medium">{{loan.totalAmount}} €</div>
                     </div>
                     <div class="ml-2">
                       <button pButton icon="pi pi-ellipsis-v" class="p-button-text p-button-rounded"></button>
@@ -232,16 +232,16 @@ const endpoint: any = environment.baseUrlSpring;
                 <div class="border-t border-gray-200"></div>
 
                 <!-- Producto 1 -->
-                <div class="relative hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                <div class="relative hover:bg-gray-50 rounded-lg transition-colors duration-200" *ngFor="let loan of loans">
                   <a class="absolute inset-0 z-10" href="#"></a>
                   <div class="flex items-center py-3 px-4 relative">
                     <i class="pi pi-money-bill text-2xl text-yellow-300 mr-4"></i>
                     <div class="pr-4">
-                      <div class="font-medium">Facilitea Canal</div>
-                      <div class="text-sm text-gray-600">322.811000-78</div>
+                      <div class="font-medium">{{loan.name}}</div>
+                      <div class="text-sm text-gray-600">{{loan.type}}</div>
                     </div>
                     <div class="ml-auto text-right">
-                      <div class="font-medium">150,00 €</div>
+                      <div class="font-medium">{{loan.totalAmount}} €</div>
                     </div>
                     <div class="ml-2">
                       <button pButton icon="pi pi-ellipsis-v" class="p-button-text p-button-rounded"></button>
@@ -249,24 +249,6 @@ const endpoint: any = environment.baseUrlSpring;
                   </div>
                 </div>
                 <div class="border-t border-gray-200"></div>
-
-                <!-- Producto 2 -->
-                <div class="relative hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                  <a class="absolute inset-0 z-10" href="#"></a>
-                  <div class="flex items-center py-3 px-4 relative">
-                    <i class="pi pi-money-bill text-2xl text-yellow-300 mr-4"></i>
-                    <div class="pr-4">
-                      <div class="font-medium">Microcr. Personal</div>
-                      <div class="text-sm text-gray-600">801.755494-90</div>
-                    </div>
-                    <div class="ml-auto text-right">
-                      <div class="font-medium">7.302,54 €</div>
-                    </div>
-                    <div class="ml-2">
-                      <button pButton icon="pi pi-ellipsis-v" class="p-button-text p-button-rounded"></button>
-                    </div>
-                  </div>
-                </div>
               </p-accordion-content>
             </p-accordion-panel>
           </p-accordion>
@@ -296,6 +278,9 @@ export class ProductPage {
     userLogin: any;
     products: any[] = [];
     accounts: any[] = [];
+    loans: any[] = [];
+    loansH: any[] = [];
+
     totalBalanceAccount:Number = 0;
 
     visible = false;
@@ -397,6 +382,8 @@ export class ProductPage {
             }
             this.products = this.userLogin?.product || [];
             this.accounts = this.userLogin?.account || [];
+            this.loans = this.userLogin?.credits.filter((loan: any) => loan.type !== "Prestamo hipotecario") || [];
+            this.loansH = this.userLogin?.credits.filter((loan: any) => loan.type === "Prestamo hipotecario") || [];
             this.totalBalanceAccount = this.accounts.reduce((sum, account) => sum + account.balance, 0);
         });
     }

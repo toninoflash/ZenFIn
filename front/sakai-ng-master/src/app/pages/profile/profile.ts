@@ -22,7 +22,7 @@ const endpoint: any = environment.baseUrlSpring + 'users';
     imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, MenuModule, ReactiveFormsModule, CommonModule, Textarea],
     providers: [UserService, BaseServiceService, MessageService],
     template: `
-        <div class="card max-w-3xl mx-auto p-6 rounded-2xl shadow-md">
+        <div class="card   rounded-2xl shadow-md">
             <div class="flex items-start space-x-6">
                 <!-- Avatar -->
                 <img [src]="userLogin.avatarUrl" alt="avatar" class="w-24 h-24 rounded-full object-cover border border-gray-300 shadow-sm" />

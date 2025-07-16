@@ -9,7 +9,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 @Component({
     selector: 'app-credit',
     imports: [AppLayout],
-    template: ` <app-list [title]="title" [dataSource]="credits" (visibleEmitter)="visibilityModal()" (viewEmitter)="viewAccount($event)"></app-list>`
+    template: ` <app-list [title]="title" [dataSource]="credits" (visibleEmitter)="visibilityModal()" (viewEmitter)="viewAccount($event)" [newButton]="false"></app-list>`
 })
 export class Credit implements OnInit {
     title = 'Mis prestamos e hipotecas';
@@ -50,6 +50,6 @@ export class Credit implements OnInit {
         this.visible = true;
     }
     viewAccount(event: any) {
-        this.router.navigate([`/account/${event}`]);
+        this.router.navigate([`/credit/${event}`]);
     }
 }

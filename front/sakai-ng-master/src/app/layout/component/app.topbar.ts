@@ -78,11 +78,11 @@ import { User } from '../../core/models/user';
                         <i class="pi pi-inbox"></i>
                         <span>Messages</span>
                     </button>
-                    <button type="button" class="layout-topbar-action" routerLink="/profile">
+                    <button type="button" class="layout-topbar-action"  (click)="menu.toggle($event)">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
                     </button>
-
+                            <p-menu #menu [popup]="true" [model]="menuItems" class="menu-left"></p-menu>
 
                 </div>
             </div>
@@ -92,6 +92,7 @@ import { User } from '../../core/models/user';
 export class AppTopbar {
     items!: MenuItem[];
     userLogin!: User;
+    menuItems: MenuItem[] = [];
     constructor(
         public layoutService: LayoutService,
         private userService: UserService
@@ -103,7 +104,12 @@ export class AppTopbar {
 
     ngOnInit() {
         this.userLogin = this.userService.user as User;
-
+ this.menuItems = [
+            { label: 'Ver perfil', icon: 'pi pi-user-edit', routerLink: '/profile' },
+            { label: 'Ver sitio web', icon: 'pi pi-globe', command: () => window.open('https://' + this.userLogin.website, '_blank') },
+            { separator: true },
+            { label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => this.logout() }
+        ];
     }
     logout() {
         this.userService.logout();

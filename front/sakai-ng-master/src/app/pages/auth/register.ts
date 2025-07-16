@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,12 +15,14 @@ import { firstValueFrom } from 'rxjs';
 import { User } from '../../core/models/user';
 import { Utils } from '../../core/utils';
 import { Toast } from 'primeng/toast';
+import { TextareaModule } from 'primeng/textarea';
+import { CommonModule } from '@angular/common';
 const endpoint: any = environment.baseUrlSpring + 'users';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-register',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, Toast],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, Toast, TextareaModule, CommonModule],
     providers: [UserService, BaseServiceService, MessageService],
     template: `
         <app-floating-configurator />
@@ -49,27 +51,49 @@ const endpoint: any = environment.baseUrlSpring + 'users';
                             <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a ZenFin!</div>
                             <span class="text-muted-color font-medium">Menos estrés. Más control.</span>
                         </div>
+                        <div *ngIf="!checked">
+                            <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Nombre de usuario</label>
+                            <input pInputText id="username" type="text" placeholder="Nombre de usuario" class="w-full mb-4" [(ngModel)]="username" />
 
-                        <div>
                             <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                            <input pInputText id="email1" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-8" [(ngModel)]="email" />
+                            <input pInputText id="email1" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-4" [(ngModel)]="email" />
 
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
-                            <p-password id="password1" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+                        </div>
+                            <p-button label="Aceptar" styleClass="w-full" (onClick)="sendMail()" [loading]="spinner" [loadingIcon]="'pi pi-spinner'" *ngIf="!checked"></p-button>
 
-                            <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                                <div class="flex items-center">
-                                    <p-checkbox [(ngModel)]="checked" id="rememberme1" binary class="mr-2"></p-checkbox>
-                                    <label for="rememberme1">Recuerdame</label>
+                        <div *ngIf="checked">
+                            <div>
+                                <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña*</label>
+                                <p-password id="password1" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Columna 1 -->
+                                    <div>
+                                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Nombre</label>
+                                        <input pInputText id="name" type="text" placeholder="Nombre" class="w-full mb-8" [(ngModel)]="name" />
+
+                                        <label for="website" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Web personal</label>
+                                        <input pInputText id="website" type="text" placeholder="Sitio web" class="w-full mb-8" [(ngModel)]="website" />
+                                    </div>
+
+                                    <!-- Columna 2 -->
+                                    <div>
+                                        <label for="lastname" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Apellidos*</label>
+                                        <input pInputText id="lastname" type="text" placeholder="Apellidos" class="w-full mb-8" [(ngModel)]="lastname" />
+
+                                        <label for="phone" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Número de contacto</label>
+                                        <input pInputText id="phone" type="text" placeholder="Teléfono" class="w-full mb-8" [(ngModel)]="phone" />
+
+                                        <label for="direction" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Dirección</label>
+                                        <input pInputText id="direction" type="text" placeholder="Dirección" class="w-full mb-8" [(ngModel)]="direction" />
+                                    </div>
                                 </div>
-                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidates la contraseña?</span>
                             </div>
-                            <p-button label="Entrar" styleClass="w-full" (onClick)="login()" [loading]="spinner" [loadingIcon]="'pi pi-spinner'"></p-button>
+                            <label for="bio" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Biografía</label>
+                            <textarea pTextarea [(ngModel)]="bio" class="w-full mb-8"></textarea>
+                            <p-button label="Aceptar" styleClass="w-full" (onClick)="register()" [loading]="spinner" [loadingIcon]="'pi pi-spinner'"></p-button>
                         </div>
-                        <div class="flex items-center my-4 justify-center">
-                                ¿No tienes cuenta? Registrate <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" routerLink="register">aquí.</span>
-
-                        </div>
+                        <div class="flex items-center my-4 justify-center">¿Ya tienes cuenta? Entra desde <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" routerLink="/login">aquí.</span></div>
                     </div>
                 </div>
             </div>
@@ -77,10 +101,17 @@ const endpoint: any = environment.baseUrlSpring + 'users';
         </div>
     `
 })
-export class Login {
+export class Register {
     email: string = '';
 
     password: string = '';
+    username: string = '';
+    name: string = '';
+    lastname: string = '';
+    phone: string = '';
+    website: string = '';
+    direction: string = '';
+    bio: string = '';
 
     checked: boolean = false;
 
@@ -90,32 +121,80 @@ export class Login {
         private userService: UserService,
         private baseService: BaseServiceService,
         private router: Router,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private route: ActivatedRoute
     ) {}
-    async login(): Promise<void> {
-        const url = `${endpoint}/validate`;
-        const loginUser = { username: this.email, password: this.password };
+    ngOnInit(): void {
+        // Captura los parámetros de la URL
+        this.route.queryParams.subscribe((params) => {
+            this.email = params['email'];
+            this.username = params['username'];
+            this.name = params['name'];
+            this.lastname = params['lastname'];
+            if (params['email']) {
+                this.checked = true;
+            }
+            // Opcional: Muestra los datos en consola para verificar
+            console.log('Datos capturados:', {
+                email: this.email,
+                username: this.username,
+                name: this.name,
+                lastname: this.lastname
+            });
+        });
+    }
+
+    async sendMail(): Promise<void> {
+        const url = `${endpoint}/register`;
+        const regtisterUser = { email: this.email, username: this.username};
+        if (!regtisterUser.email || !regtisterUser.username ) {
+            this.handleError('Por favor, completa todos los campos obligatorios');
+            return;
+        }
 
         this.spinner = true;
 
-        try {
-            const validationRes = await firstValueFrom(this.baseService.getItemsWithParams(url, loginUser));
-
-            if (!validationRes) {
-                this.handleError('No se ha podido encontrar el usuario');
-                return;
+        this.baseService.postItem(url, regtisterUser).subscribe(
+            (resp: any) => {
+                console.log(resp);
+                this.spinner = false;
+            },
+            (error: any) => {
+                this.spinner = false;
+                if (error.status === 400) {
+                    this.handleError('El usuario ya existe');
+                } else {
+                    Utils.showMessage(this.messageService, 'succes', 'Bien', 'Email enviado correctamente, revisa tu bandeja de entrada para activar tu cuenta.');
+                }
             }
-
-            const loginRes: any = await firstValueFrom(this.userService.login(loginUser));
-
-            this.userService.user = validationRes as User;
-            sessionStorage.setItem('token', loginRes.access_token);
-            this.router.navigate(['/dashboard']);
-        } catch (error) {
-            this.handleError('Error al validar o iniciar sesión');
-        } finally {
-            this.spinner = false;
+        );
+    }
+    async register(): Promise<void> {
+        const url = `${endpoint}`;
+        const regtisterUser = { email: this.email, username: this.username, password: this.password, name: this.name, lastname: this.lastname, phone: this.phone, website: this.website, direction: this.direction, bio: this.bio };
+        if (!regtisterUser.email || !regtisterUser.username || !regtisterUser.password) {
+            this.handleError('Por favor, completa todos los campos obligatorios');
+            return;
         }
+
+        this.spinner = true;
+
+        this.baseService.postItem(url, regtisterUser).subscribe(
+            (resp: any) => {
+                console.log(resp);
+                this.spinner = false;
+                    this.router.navigate(['/login'], { queryParams: { email: resp.email, password: resp.password } });
+
+            },
+            (error: any) => {
+                this.spinner = false;
+                if (error.status === 400) {
+                    this.handleError('El usuario ya existe');
+                } else {
+                    Utils.showMessage(this.messageService, 'alarm', 'Error', 'El usuario ya se encuentra registrado. Prueba a loguearte.');
+                }
+            }
+        );
     }
 
     private handleError(message: string): void {

@@ -1,3 +1,4 @@
+import { Constans } from './../../core/consts';
 import { Component, OnInit } from '@angular/core';
 import { NotificationsWidget } from './components/notificationswidget';
 import { StatsWidget } from './components/statswidget';
@@ -10,22 +11,25 @@ import { CommonModule } from '@angular/common';
 import { Tag } from 'primeng/tag';
 import { BaseServiceService } from '../../core/services/base-service.service';
 import { environment } from '../../../enviroments/environment';
+import { DateTopChange } from './components/datetopchange';
 const endpoint: any = environment.baseUrlSpring;
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget, Dialog, CommonModule, Tag],
+    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget, Dialog, CommonModule, Tag, DateTopChange],
     providers: [UserService],
     template: `
         <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" [dataSource] = "movements"/>
+            <app-date-top-change class="contents" [dataSource]="movements" [selectedDate]="selectedDate" (selectedDateChange)="selectedDateEmitter($event)" />
+            <app-stats-widget class="contents" [dataSource]="movements" [selectedDate]="selectedDate" (movementChange)="movementChangeEmitter($event)"/>
             <div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget [products]="movements" [cols]="cols" (viewEmitter)="viewModal($event)" />
-                <app-best-selling-widget />
+                <app-recent-sales-widget [products]="movementsView" [cols]="cols" (viewEmitter)="viewModal($event)" />
+                <app-notifications-widget />
+
             </div>
             <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
+                <app-revenue-stream-widget [labels]="labels"  [selectedDate]="selectedDate"/>
+                <app-best-selling-widget />
             </div>
         </div>
         <p-dialog [(visible)]="visibleView" header="Detalles del Movimiento" [modal]="true">
@@ -74,28 +78,35 @@ const endpoint: any = environment.baseUrlSpring;
 export class Dashboard implements OnInit {
     userLogin: any;
     movements: any[] = [];
+    movementsView: any[] = [];
     cols: any;
     product: any;
     visibleView = false;
-
+    labels: any = ['a', 'b', 'c', 'd'];
+    dataSource: any[][] = [[], [], []];
+    selectedDate: any = 5;
     constructor(
         private userService: UserService,
         private baseService: BaseServiceService
     ) {}
     ngOnInit(): void {
-       if (sessionStorage.getItem('us')) {
+        if (sessionStorage.getItem('us')) {
             const storedUser = sessionStorage.getItem('us');
             this.userLogin = storedUser ? JSON.parse(storedUser) : null;
         } else {
             this.userLogin = this.userService.user;
         }
         this.movements = this.userLogin.movements;
+        this.movementsView = this.userLogin.movements;
         this.cols = [
             { field: 'name', header: 'Asunto' },
             { field: 'type', header: 'Tipo', pipe: 'primary' },
             { field: 'cuota', header: 'Cuota', pipe: 'currency' },
             { field: 'createdAt', header: 'Fecha', pipe: 'date' }
         ];
+        this.selectedDate = new Date().getMonth()+1; // Establece el mes actual como valor predeterminado
+        this.setLabels();
+
     }
     viewModal(event: any) {
         this.product = event;
@@ -103,7 +114,26 @@ export class Dashboard implements OnInit {
         this.baseService.getItems(url).subscribe((resp: any) => {
             this.product.aid = resp.iban;
             this.visibleView = true;
-
         });
+    }
+    setLabels() {
+        const currentMonthIndex = this.selectedDate; // 0 = Enero
+        this.labels = [];
+
+        for (let i = 4; i > 0; i--) {
+
+            const monthLabel = Constans.MONTHS[currentMonthIndex - i].label;
+            this.labels.push(monthLabel);
+
+
+        }
+    }
+
+    selectedDateEmitter(event: any) {
+        this.selectedDate = event;
+        this.setLabels();
+    }
+    movementChangeEmitter(event: any) {
+        this.movementsView = event;
     }
 }

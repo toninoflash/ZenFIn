@@ -20,7 +20,7 @@ interface Column {
             NumberFormatPipe],
     template: `<div class="card !mb-8">
         <div class="font-semibold text-xl mb-4">Movimientos</div>
-        <p-table [value]="products" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+        <p-table [value]="products" [paginator]="true" [rows]="10" responsiveLayout="scroll">
     <ng-template pTemplate="header">
         <tr>
             <th *ngFor="let col of cols" [pSortableColumn]="col.field" style="min-width:12rem">
@@ -41,7 +41,7 @@ interface Column {
                     {{ product[col.field] | customDate }}
                 </span>
                 <span *ngIf="col.pipe === 'primary'"
-                    [class]="product[col.field] === 'Ingreso' ? 'text-primary font-bold' : product[col.field] === 'Gasto' ? 'text-red-600 font-bold' : 'text-blue-600 font-bold'">
+                    [class]="product[col.field] === 'Ingreso' ? 'text-primary-400 font-bold' : product[col.field] === 'Gasto' ? 'text-primary-600 font-bold' : 'text-primary-800 font-bold'">
                     {{ product[col.field] }}
                 </span>
             </td>
@@ -52,7 +52,16 @@ interface Column {
     providers: [ProductService]
 })
 export class RecentSalesWidget {
-    @Input() products!: any[];
+    private _products: any;
+
+    @Input()
+    set products(value: any) {
+        this._products = value;
+    }
+
+    get products(): any {
+        return this._products;
+    }
     @Input() cols!: Column[];
     @Output() viewEmitter: EventEmitter<any> = new EventEmitter<any>();
 
@@ -60,7 +69,6 @@ export class RecentSalesWidget {
     constructor(private productService: ProductService) {}
 
     ngOnInit() {
-        console.table(this.products)
     }
     viewProduct(product: Product) {
         this.product = { ...product };

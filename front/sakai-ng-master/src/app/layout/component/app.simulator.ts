@@ -28,146 +28,146 @@ const endpoint = environment.baseUrlSpring;
     imports: [CommonModule, FormsModule, InputNumberModule, SliderModule, DropdownModule, RadioButtonModule, ButtonModule, TableModule, CardModule, InputTextModule, NumberFormatPipe, ToastModule, ConfirmPopupModule],
     providers: [UserService, BaseServiceService, ConfirmationService, MessageService],
     template: ` <div *ngIf="accounts.length >= 1">
-        <div class="container mx-auto p-6 ">
-            <!-- Título -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-primary">Simulador de Préstamo</h1>
-                <p class=" mt-2">Complete los datos para calcular su préstamo</p>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <div *ngFor="let option of loanTypeOptions" class="cursor-pointer hover:scale-105 transition" (click)="selectLoanType(option)">
-                <div class="rounded-lg shadow-md p-4 text-center h-full flex flex-col" [class.bg-primary]="selectedType === option.value" [class.card]="selectedType !== option.value" [class.text-white]="selectedType === option.value">
-                    <div class="h-40 w-full mb-2 overflow-hidden flex items-center justify-center">
-                        <img [src]="option.img" alt="{{ option.label }}" class="object-cover w-full h-full" [style.filter]="selectedType === option.value ? 'brightness(0.8)' : 'none'" />
-                    </div>
-
-                    <p class="font-semibold mt-auto">{{ option.label }}</p>
+            <div class="container mx-auto p-6 ">
+                <!-- Título -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-primary">Simulador de Préstamo</h1>
+                    <p class=" mt-2">Complete los datos para calcular su préstamo</p>
                 </div>
             </div>
-        </div>
-        <div class="container mx-auto p-6 min-h-screen" *ngIf="selectedType">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Formulario de Simulación -->
-                <div class="card rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Datos del Préstamo</h2>
-
-                    <form class="space-y-4">
-                        <!-- Plazo -->
-                        <div>
-                            <label for="term" class="block text-sm font-medium  mb-1">Cuenta asociada</label>
-                            <p-dropdown id="term" [(ngModel)]="loan.uid" [options]="accountTypes" optionLabel="label" optionValue="value" class="w-full" name="aid"> </p-dropdown>
-                        </div>
-                        <!-- Campo Asunto (nuevo) -->
-                        <div>
-                            <label for="subject" class="block text-sm font-medium mb-1">Asunto*</label>
-                            <input id="subject" type="text" pInputText [(ngModel)]="loan.name" class="w-full" name="subject" placeholder="Nombre para identificar préstamo" />
-                        </div>
-                        <!-- Monto del Préstamo -->
-                        <div>
-                            <label for="amount" class="block text-sm font-medium  mb-1">Monto solicitado</label>
-                            <p-inputNumber id="amount" [(ngModel)]="loan.amount" mode="currency" currency="EUR" locale="es-ES" class="w-full" [min]="1000" [max]="50000" name="amount"> </p-inputNumber>
-                            <p-slider [(ngModel)]="loan.amount" [min]="1000" [max]="50000" [step]="500" class="w-full mt-2" name="amountSlider"> </p-slider>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div *ngFor="let option of loanTypeOptions" class="cursor-pointer hover:scale-105 transition" (click)="selectLoanType(option)">
+                    <div class="rounded-lg shadow-md p-4 text-center h-full flex flex-col" [class.bg-primary]="selectedType === option.value" [class.card]="selectedType !== option.value" [class.text-white]="selectedType === option.value">
+                        <div class="h-40 w-full mb-2 overflow-hidden flex items-center justify-center">
+                            <img [src]="option.img" alt="{{ option.label }}" class="object-cover w-full h-full" [style.filter]="selectedType === option.value ? 'brightness(0.8)' : 'none'" />
                         </div>
 
-                        <!-- Plazo -->
-                        <div>
-                            <label for="term" class="block text-sm font-medium  mb-1">Plazo (meses)</label>
-                            <p-dropdown id="term" [(ngModel)]="loan.term" [options]="termOptions" optionLabel="label" optionValue="value" class="w-full" name="term"> </p-dropdown>
-                        </div>
+                        <p class="font-semibold mt-auto">{{ option.label }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container mx-auto p-6 min-h-screen" *ngIf="selectedType">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Formulario de Simulación -->
+                    <div class="card rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Datos del Préstamo</h2>
 
-                        <!-- Tasa de Interés -->
-                        <div>
-                            <label for="rate" class="block text-sm font-medium mb-1">Tasa de interés anual</label>
-                            <div class="flex items-center">
-                                <p-inputNumber id="rate" [(ngModel)]="loan.interestRate" suffix="%" [min]="5" [max]="30" [step]="0.5" [mode]="'decimal'" [minFractionDigits]="1" [maxFractionDigits]="2" class="w-full" name="rate"> </p-inputNumber>
+                        <form class="space-y-4">
+                            <!-- Plazo -->
+                            <div>
+                                <label for="term" class="block text-sm font-medium  mb-1">Cuenta asociada</label>
+                                <p-dropdown id="term" [(ngModel)]="loan.uid" [options]="accountTypes" optionLabel="label" optionValue="value" class="w-full" name="aid"> </p-dropdown>
+                            </div>
+                            <!-- Campo Asunto (nuevo) -->
+                            <div>
+                                <label for="subject" class="block text-sm font-medium mb-1">Asunto*</label>
+                                <input id="subject" type="text" pInputText [(ngModel)]="loan.name" class="w-full" name="subject" placeholder="Nombre para identificar préstamo" />
+                            </div>
+                            <!-- Monto del Préstamo -->
+                            <div>
+                                <label for="amount" class="block text-sm font-medium  mb-1">Monto solicitado</label>
+                                <p-inputNumber id="amount" [(ngModel)]="loan.amount" mode="currency" currency="EUR" locale="es-ES" class="w-full" [min]="1000" [max]="50000" name="amount"> </p-inputNumber>
+                                <p-slider [(ngModel)]="loan.amount" [min]="1000" [max]="50000" [step]="500" class="w-full mt-2" name="amountSlider"> </p-slider>
+                            </div>
+
+                            <!-- Plazo -->
+                            <div>
+                                <label for="term" class="block text-sm font-medium  mb-1">Plazo (meses)</label>
+                                <p-dropdown id="term" [(ngModel)]="loan.term" [options]="termOptions" optionLabel="label" optionValue="value" class="w-full" name="term"> </p-dropdown>
+                            </div>
+
+                            <!-- Tasa de Interés -->
+                            <div>
+                                <label for="rate" class="block text-sm font-medium mb-1">Tasa de interés anual</label>
+                                <div class="flex items-center">
+                                    <p-inputNumber id="rate" [(ngModel)]="loan.interestRate" suffix="%" [min]="5" [max]="30" [step]="0.5" [mode]="'decimal'" [minFractionDigits]="1" [maxFractionDigits]="2" class="w-full" name="rate"> </p-inputNumber>
+                                </div>
+                            </div>
+
+                            <!-- Botón de Simulación -->
+                            <div class="pt-4">
+                                <p-button label="Calcular préstamo" icon="pi pi-calculator" (onClick)="calculateLoan()" class="w-full" [loading]="spinner" [loadingIcon]="'pi pi-spinner'" [disabled]="this.loan.name === ''"> </p-button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Resultados -->
+                    <div class="card rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold  mb-4">Resultados de la Simulación</h2>
+
+                        <div *ngIf="simulationResult" class="space-y-4">
+                            <!-- Resumen -->
+                            <div class=" p-4 rounded-lg">
+                                <h3 class="font-medium ">Resumen del Préstamo</h3>
+                                <div class="grid grid-cols-3 gap-4 mt-2">
+                                    <div>
+                                        <p class="text-sm ">Monto total</p>
+                                        <p class="text-lg font-bold">{{ simulationResult.totalAmount | numberFormat }}€</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm ">Interés total {{ accountTypes.length }}</p>
+                                        <p class="text-lg font-bold">{{ simulationResult.totalInterest | numberFormat }}€</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm ">Mensualidad</p>
+                                        <p class="text-lg font-bold">{{ this.loan.term }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cuota Mensual -->
+                            <div class="text-center py-6 border-b">
+                                <p class="text-sm ">Cuota mensual estimada</p>
+                                <p class="text-3xl font-bold text-primary">{{ simulationResult.monthlyPayment | numberFormat }}€</p>
+                            </div>
+
+                            <!-- Tabla de Amortización -->
+                            <div>
+                                <h4 class="font-medium mb-2">Detalle de pagos</h4>
+                                <p-table [value]="this.simulationResult.amortizationScheduleamortizationSchedule" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Mes</th>
+                                            <th>Capital</th>
+                                            <th>Interés</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-item>
+                                        <tr>
+                                            <td>{{ item.month }}</td>
+                                            <!-- Usar item.month en lugar del índice -->
+                                            <td>{{ item.principal | numberFormat }}€</td>
+                                            <td>{{ item.interest | numberFormat }}€</td>
+                                            <td>{{ item.balance | numberFormat }}€</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+
+                            <!-- Botón de Solicitud -->
+                            <div class="pt-4">
+                                <p-toast />
+                                <p-confirmpopup />
+                                <p-button (onClick)="confirm1($event)" label="Solicitar préstamo" icon="pi pi-check" styleClass="w-full" [loading]="spinner" [loadingIcon]="'pi pi-spinner'" />
                             </div>
                         </div>
 
-                        <!-- Botón de Simulación -->
-                        <div class="pt-4">
-                            <p-button label="Calcular préstamo" icon="pi pi-calculator" (onClick)="calculateLoan()" class="w-full" [loading]="spinner" [loadingIcon]="'pi pi-spinner'" [disabled]="this.loan.name === ''"> </p-button>
+                        <!-- Estado inicial -->
+                        <div *ngIf="!simulationResult" class="text-center py-12 ">
+                            <i class="pi pi-info-circle text-4xl mb-2"></i>
+                            <p>Complete el formulario para ver los resultados</p>
                         </div>
-                    </form>
-                </div>
-
-                <!-- Resultados -->
-                <div class="card rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold  mb-4">Resultados de la Simulación</h2>
-
-                    <div *ngIf="simulationResult" class="space-y-4">
-                        <!-- Resumen -->
-                        <div class=" p-4 rounded-lg">
-                            <h3 class="font-medium ">Resumen del Préstamo</h3>
-                            <div class="grid grid-cols-3 gap-4 mt-2">
-                                <div>
-                                    <p class="text-sm ">Monto total</p>
-                                    <p class="text-lg font-bold">{{ simulationResult.totalAmount | numberFormat }}€</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm ">Interés total {{ accountTypes.length }}</p>
-                                    <p class="text-lg font-bold">{{ simulationResult.totalInterest | numberFormat }}€</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm ">Mensualidad</p>
-                                    <p class="text-lg font-bold">{{ this.loan.term }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Cuota Mensual -->
-                        <div class="text-center py-6 border-b">
-                            <p class="text-sm ">Cuota mensual estimada</p>
-                            <p class="text-3xl font-bold text-primary">{{ simulationResult.monthlyPayment | numberFormat }}€</p>
-                        </div>
-
-                        <!-- Tabla de Amortización -->
-                        <div>
-                            <h4 class="font-medium mb-2">Detalle de pagos</h4>
-                            <p-table [value]="this.simulationResult.amortizationScheduleamortizationSchedule" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th>Mes</th>
-                                        <th>Capital</th>
-                                        <th>Interés</th>
-                                        <th>Saldo</th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-item>
-                                    <tr>
-                                        <td>{{ item.month }}</td>
-                                        <!-- Usar item.month en lugar del índice -->
-                                        <td>{{ item.principal | numberFormat }}€</td>
-                                        <td>{{ item.interest | numberFormat }}€</td>
-                                        <td>{{ item.balance | numberFormat }}€</td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
-                        </div>
-
-                        <!-- Botón de Solicitud -->
-                        <div class="pt-4">
-                            <p-toast />
-                            <p-confirmpopup />
-                            <p-button (onClick)="confirm1($event)" label="Solicitar préstamo" icon="pi pi-check" styleClass="w-full" [loading]="spinner" [loadingIcon]="'pi pi-spinner'" />
-                        </div>
-                    </div>
-
-                    <!-- Estado inicial -->
-                    <div *ngIf="!simulationResult" class="text-center py-12 ">
-                        <i class="pi pi-info-circle text-4xl mb-2"></i>
-                        <p>Complete el formulario para ver los resultados</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Título -->
-            <div class="text-center mb-8" *ngIf="accounts.length === 0">
-                <h1 class="text-3xl font-bold text-primary">Simulador de Préstamo</h1>
-                <p class=" mt-2">Debes tener una cuenta a la que asociar el prestamo.</p>
-            </div>`
+        <!-- Título -->
+        <div class="text-center mb-8" *ngIf="accounts.length === 0">
+            <h1 class="text-3xl font-bold text-primary">Simulador de Préstamo</h1>
+            <p class=" mt-2">Debes tener una cuenta a la que asociar el prestamo.</p>
+        </div>`
 })
 export class Simulator implements OnInit {
     userLogin: any = null;
